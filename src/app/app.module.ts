@@ -20,7 +20,7 @@ import { RouterModule } from '@angular/router';
 import { AppRouteModule } from './app.routes';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatSnackBarModule} from '@angular/material/snack-bar'
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HttpErrorsHandlerInterceptor } from './services/errors-http.interceptor';
 import { MatMenuModule} from '@angular/material/menu'
 
@@ -37,42 +37,35 @@ export const IndexDBConfig: DBConfig  = {
     }
   ]
 };
-@NgModule({
-  declarations: [
-    AppComponent, 
-    RTQuotesTableComponent, TestingPanelComponent
-  ],
-  imports: [
-    BrowserModule,
-    MatIconModule,
-    FormsModule,
-    MatSliderModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatTooltipModule,
-    MatExpansionModule,
-    MatAutocompleteModule,
-    MatSelectModule,
-    RouterModule,
-    AppRouteModule,
-    MatSnackBarModule,
-    MatProgressBarModule,
-    HttpClientModule,
-    MatMenuModule,
-    NgxIndexedDBModule.forRoot(IndexDBConfig) 
-    
-  ],
-  providers: [
-    provideAnimations(),
-    {
-      provide:HTTP_INTERCEPTORS,
-      useClass:HttpErrorsHandlerInterceptor,
-      multi:true
-    },
-    [CookieService]
-  ],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        RTQuotesTableComponent, TestingPanelComponent
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        MatIconModule,
+        FormsModule,
+        MatSliderModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatTooltipModule,
+        MatExpansionModule,
+        MatAutocompleteModule,
+        MatSelectModule,
+        RouterModule,
+        AppRouteModule,
+        MatSnackBarModule,
+        MatProgressBarModule,
+        MatMenuModule,
+        NgxIndexedDBModule.forRoot(IndexDBConfig)], providers: [
+        provideAnimations(),
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HttpErrorsHandlerInterceptor,
+            multi: true
+        },
+        [CookieService],
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule {}
