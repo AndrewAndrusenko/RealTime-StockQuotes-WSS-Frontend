@@ -79,3 +79,24 @@ Backend:
 5. TS - strict initialization rule has been applied
 6. BehaviourSubject encapsulation has been integrated for main services via getters and methods to update data 
 7. ENV updated
+
+12 - 14/07/26
+Reconnecting to wss stream/server && refactor 
+1. QuotesDataService=>Reconnecting to wss stream/server has been fully refactored. Implemented exponential backoff and jitter.
+Implemented rxjs repeat + retry to reconnect on all types of stream failures  
+2. Error interceptor has been refactored: all moved to pipes and observables
+3. JWT refreshing has been implemented in error interceptor
+4. JwtHandlerService has been added. Main refresh stream uses exhaustMap to prevent simultaneous parallel requests to refresh jwt
+5. Method getUserDatahas been added to AuthService. Method is used (RTQuotesTableComponent) to retrieve user data based on jwt token.
+6. Removed unnecessary CanActive guard from the main route. It was implemented not to guard but to update user info based on jwt token
+7. Log out functionality has been fixed in the RTQuotesTableComponent 
+Since user was authenticated in dedeicated service with differennt subdomain
+8. Storage service - delete method has been added. Service is to be refactored
+9. Error without code (when ws server is down from the start) is treated as 503 error with reconnecting
+
+ToDo:
+1. Separate stream watching for delay in quotes stream in order to notify UI
+2. Refactor QuotesDataService => quotesStream by eliminating quote array mutation and implement immutable array by using scan and buffer
+3. Refactor TestingMngService in accordance with QuotesDataService: reconnecting handler and so on
+4. Config json to implement
+5. Storage service - error handling and refactor

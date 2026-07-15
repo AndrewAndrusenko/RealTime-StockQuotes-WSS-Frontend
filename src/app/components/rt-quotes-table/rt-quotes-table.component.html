@@ -1,7 +1,7 @@
 @let connectionState = (this.quotesService.connectionState$ | async) ?? "disconnected";
 @let isStreamActive = (this.quotesService.streamActive$ | async) ?? false;
 @let connectionRepeat = this.quotesService.connectionRepeat$ | async;
-@let userData = this.authService.userData | async;
+@let userData = this.authService.userData$ | async;
 
 <button
   class="button-icon size-l outline-button"
@@ -56,14 +56,14 @@
         <mat-menu #menu="matMenu">
           <button
             mat-menu-item
-            (click)="logOut()"
+            (click)="logOut(false)"
           >
             <mat-icon>logout</mat-icon>
             <span>Log Out</span>
           </button>
           <button
             mat-menu-item
-            routerLink="/register/logout/:logout"
+            (click)="logOut(true)"
           >
             <mat-icon>login</mat-icon>
             <span>LogIn/SignUp</span>
@@ -141,13 +141,13 @@
   }
   @if (["Reconnecting", "Connecting", "Disconnecting"].includes(connectionState)) {
     <div class="process-state">
-      <label>{{connectionState}...</label>
+      <label>{{connectionState}}...</label>
       @if (["Reconnecting"].includes(connectionState)) {
         <label>
           Attempt
           {{connectionRepeat?.current }}
           out of
-          {{ (this.quotesService.connectionRepeat$ | async)?.total }}
+          {{ connectionRepeat?.total }}
         </label>
       }
       <mat-progress-bar mode="query"></mat-progress-bar>

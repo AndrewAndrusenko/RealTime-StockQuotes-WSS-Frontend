@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
-import { catchError, filter, Observable, of } from 'rxjs';
+import { catchError, filter, map, Observable, of, tap } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
 import { IndexDBConfig } from '../app.module';
 export enum StorageType {
@@ -11,6 +11,7 @@ export enum StorageType {
 class Strategy {
   getData(key: string) {}
   setData<T>(key: string, data: T) {}
+  deleteData(key: string) {}
 }
 class StrategyCookie extends Strategy {
   constructor(private cookiesService: CookieService) {
@@ -30,6 +31,10 @@ class StrategyCookie extends Strategy {
     this.cookiesService.set(key, JSON.stringify(data));
     return this.cookiesService.get(key) === JSON.stringify(data) ? of(data) : of(new Error('Error saving cookies'));
   }
+  override deleteData<T>(key: string): Observable<boolean | Error> {
+    this.cookiesService.delete(key);
+    return !!this.cookiesService.get(key)? of(true) : of(new Error('Error deleting cookie'));
+  }
 }
 class StrategyIndexDB extends Strategy {
   constructor(private indexDBservice: NgxIndexedDBService) {
@@ -43,7 +48,8 @@ class StrategyIndexDB extends Strategy {
         key,
       )
       .pipe(
-        filter((data) => data !== undefined),
+        //tap(d=>console.log('d',d )),
+        //filter((data) => data !== undefined),
         catchError((err) => {
           console.log('er', err);
           return of(err);
@@ -58,32 +64,50 @@ class StrategyIndexDB extends Strategy {
       }),
     );
   }
+  override deleteData<T>(key: string): Observable<boolean | Error> {
+    return this.indexDBservice.deleteByKey(IndexDBConfig.objectStoresMeta[0].store,key).pipe(
+      map(()=>true),
+      catchError((err) => {
+        console.log('er', err);
+        return of(err);
+      }),
+    );
+  }
 }
 export class AppStorage {
   constructor(private strategy: StrategyIndexDB | StrategyCookie) {
     this.strategy = strategy;
   }
   getStorageData<T>(key: string): Observable<T | Error> {
-    return this.strategy.getData(key);
+    return this.strategy.getData<T | Error>(key).pipe(
+    );
   }
   setStorageData<T>(key: string, data: T): Observable<T | Error> {
     return this.strategy.setData(key, data);
+  }
+  deleteStorageData<T>(key: string): Observable<boolean | Error> {
+    return this.strategy.deleteData(key);
   }
 }
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
-  constructor(
-    private indexDBservice: NgxIndexedDBService,
-    private cookiesService: CookieService,
-  ) {}
-  initStorageObj(storageType: StorageType): AppStorage {
+  private readonly indexDBservice =inject(NgxIndexedDBService);
+  private readonly cookiesService = inject (CookieService)
+  private _storages:Map<StorageType,AppStorage> = new Map()
+  private initStorageObj(storageType: StorageType): AppStorage {
     switch (storageType) {
       case StorageType.Cookie:
-        return new AppStorage(new StrategyCookie(this.cookiesService));
+        this._storages.set(storageType, new AppStorage(new StrategyCookie(this.cookiesService)));
+        break;
       case StorageType.IndexDB:
-        return new AppStorage(new StrategyIndexDB(this.indexDBservice));
+        this._storages.set(storageType, new AppStorage(new StrategyIndexDB(this.indexDBservice)));
+        break;
     }
+    return this._storages.get(storageType)!
+  }
+  public storage(storageType:StorageType):AppStorage {
+    return this._storages.get(storageType) || this.initStorageObj(storageType)
   }
 }

@@ -8,10 +8,10 @@ export interface IErrorHandler {
   authErr?:boolean
 };
 export const SERVER_ERRORS = new Map <number, IErrorHandler> ([
-  [1, {
-    code:1,
-    messageToUI:'Unable to reconnect to the server',
-    retryConnection:false
+  [503, {
+    code:503,
+    messageToUI:'Service Unavailable',
+    retryConnection:true
   }],
   [1005, {
     code:1006,

@@ -5,6 +5,8 @@ import { QuotesDataService, IRate } from '../../services/quotes-data.service';
 import { FormControl } from '@angular/forms';
 import { AppStorage, StorageService, StorageType } from '../../services/storage.service';
 import { AuthService } from '../../services/auth.service';
+import { ENV } from '../../../environments/environment';
+import { SnacksService } from '../../services/snacks.service';
 @Component({
   selector: 'app-rt-quotes-table',
   templateUrl: './rt-quotes-table.component.html',
@@ -13,30 +15,29 @@ import { AuthService } from '../../services/auth.service';
   standalone: false,
 })
 export class RTQuotesTableComponent {
-  public authService= inject(AuthService)
+  private snack = inject(SnacksService);
+  private appStorage: AppStorage = inject(StorageService).storage(StorageType.IndexDB);
+  private subsriptions = new Subscription();
+  public authService = inject(AuthService);
   public quotesService = inject(QuotesDataService);
-  private storageService= inject(StorageService)
-  private appStorage: AppStorage = this.storageService.initStorageObj(StorageType.IndexDB);
   public showPanels: boolean = true;
   public filterQuotesList = new FormControl('');
   public savedFilters: string[] = [];
   public cachedTime = 500;
   public quotesData$!: Observable<IRate[]>; //Subsction to the quotes stream
   public newFilter: Observable<boolean> | undefined = undefined;
-  private subsriptions = new Subscription();
 
   ngOnInit(): void {
+    this.subsriptions.add(this.authService.getUserData().subscribe());
     this.subsriptions.add(
       this.appStorage.getStorageData('custom-filter').subscribe((filters) => {
         this.savedFilters = (filters as { code: string; filter: string[] }).filter;
       }),
     );
     this.subsriptions.add(
-      this.quotesService.connectionState$
-        .pipe(filter((st) => st === 'connected'))
-        .subscribe(() => {
-          this.getQuotesStream(this.cachedTime);
-        }),
+      this.quotesService.connectionState$.pipe(filter((st) => st === 'connected')).subscribe((st) => {
+        this.getQuotesStream(this.cachedTime);
+      }),
     );
     this.newFilter = this.filterQuotesList.valueChanges.pipe(
       debounceTime(300),
@@ -47,7 +48,7 @@ export class RTQuotesTableComponent {
     this.subsriptions.unsubscribe();
   }
   ngAfterViewInit(): void {
-    this.manageStream();
+    //this.manageStream();
   }
   manageStream() {
     this.quotesService.connectionState === 'connected'
@@ -59,7 +60,7 @@ export class RTQuotesTableComponent {
   }
   getQuotesStream(cahceTime = 500) {
     //Subscribe to the stream of quotes and handle update of quotes array
-    this.quotesData$ = this.quotesService.tapToQuotesStream(cahceTime).pipe(
+    this.quotesData$ = this.quotesService.quotesStream$(cahceTime).pipe(
       switchMap((data) => {
         const filterArray = this.filterQuotesList
           ?.getRawValue()
@@ -102,7 +103,12 @@ export class RTQuotesTableComponent {
       this.appStorage.setStorageData('filterList', { code: 'custom-filter', filter: this.savedFilters }).subscribe(),
     );
   }
-  logOut() {
-    this.authService.logOut(this.authService.userData.getValue().userId);
+  logOut(loginAgain: boolean) {
+    this.subsriptions.add(
+      this.authService.logOut(this.authService.userData.userId).subscribe((res) => {
+        res && loginAgain ? (window.location.href = ENV.AUTH_SERVER_UI_ADDRESS) : null;
+        res === false ? this.snack.openSnack('Logout error', 'Okay', 'error-snackBar') : null;
+      }),
+    );
   }
 }

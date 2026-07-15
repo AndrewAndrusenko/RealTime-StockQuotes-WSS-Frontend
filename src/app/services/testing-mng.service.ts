@@ -15,8 +15,8 @@ import {
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { SnacksService } from './snacks.service';
 import { SERVER_ERRORS } from '../types/errors-model';
-import { AuthService } from './auth.service';
 import { ENV } from '../../environments/environment';
+import { JwtHandlerService } from './jwt-handler.service';
 export interface IServerCommand {
   cmd: string; //command to server: start, stop
   timeToWork: number; //time of emmiting values in milliseconds
@@ -29,7 +29,7 @@ export interface IServerCommand {
 export class TestingMngService {
   //Service to handle testing functionaly
   private readonly snacksService = inject(SnacksService)
-  private readonly authService =inject(AuthService)
+  private readonly jwtService =inject(JwtHandlerService)
   private readonly _streamStarted$ = new BehaviorSubject<boolean>(false);
   private readonly _serverConnection$ = new BehaviorSubject<boolean>(false);
   private _webSocketTest$: WebSocketSubject<{ message: string } | IServerCommand> | undefined = undefined;
@@ -85,9 +85,9 @@ export class TestingMngService {
             this.connectionAttemptN++;
             return of(SERVER_ERRORS.get(this.closeConnectionErrorCode)?.authErr === true).pipe(
               tap((jwtError) =>
-                jwtError === true ? setTimeout(() => this.authService.refreshJWTSub.next(true), 10) : null,
+                jwtError === true ? setTimeout(() => this.jwtService.refreshToken(), 10) : null,
               ),
-              switchMap((jwtError) => (jwtError === true ? this.authService.jwtRefreshedSub : of(false))),
+              switchMap((jwtError) => (jwtError === true ? this.jwtService.refreshTokenReady$ : of(false))),
               switchMap(() =>
                 SERVER_ERRORS.get(this.closeConnectionErrorCode)?.retryConnection === false ? EMPTY : of(true),
               ),
