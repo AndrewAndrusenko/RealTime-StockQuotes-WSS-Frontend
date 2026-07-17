@@ -5,6 +5,6 @@ export const ENV = {
   AUTH_SERVER_UI_ADDRESS:'https://ppklrx85-5001.euw.devtunnels.ms/apps/ssngrx/register',
   RETRY_INTERVAL:1000,
   STREAM_TIMEOUT:5500,
-  PING_HEARTBEAT_INTERVAL:20000,
+  PING_HEARTBEAT_INTERVAL:15000,
   SUCCESS_TIME_OUT:2000
 };

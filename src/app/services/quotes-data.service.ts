@@ -21,6 +21,7 @@ import { TConnectionStatus } from '../types/shared-models';
 import { IErrorHandler, SERVER_ERRORS } from '../types/errors-model';
 import { ENV } from '../../environments/environment';
 import { JwtHandlerService } from './jwt-handler.service';
+import { TitleStrategy } from '@angular/router';
 export interface IRate {
   //Intreface for received quotes from server
   time: Date; //quote rate
@@ -57,6 +58,10 @@ export class QuotesDataService {
   //buffer time for quotes data stream
   private readonly _quotesBufferTime$ = new BehaviorSubject<number>(500);
   public readonly quotesBufferTime$ = this._quotesBufferTime$.asObservable();
+  //network latency
+  private readonly _networkLatency$ = new BehaviorSubject<number|null>(null)
+  public readonly networkLatency$ = this._networkLatency$.asObservable();
+  private pingStartTime:number = 0;
 
   private closeConnectionErrorCode: number | null = null;
   private conecctionRetryCount: number = 2;
@@ -97,6 +102,7 @@ export class QuotesDataService {
     const uiPing$ = timer(ENV.PING_HEARTBEAT_INTERVAL, ENV.PING_HEARTBEAT_INTERVAL).pipe(
       tap(() => {
         if (this.wsServer$ && this.wsServer$.closed === false) {
+          this.pingStartTime = performance.now();
           this.wsServer$.next({ cmd: 'ping' });
         }
       }),
@@ -131,7 +137,6 @@ export class QuotesDataService {
   }
   private handleReconnecting<T>(): MonoTypeOperatorFunction<T> {
     const retryDelay = () => {
-      console.log('handleReconnecting', )
       this.retryAttemptNum++;
       const errorCode = this.closeConnectionErrorCode || 503;
       const error = SERVER_ERRORS.get(errorCode)!;
@@ -144,6 +149,7 @@ export class QuotesDataService {
 
       //JWT has been expired
       if (error?.authErr) {
+        this.pingStartTime = 0;
         return this.jwtService.refreshTokenAndWait$().pipe(
           switchMap((done) => {
             if (done) {
@@ -198,6 +204,20 @@ export class QuotesDataService {
         },
         next: (msg) => {
           switch ((msg as { message: string }).message) {
+            case 'pong':
+              if (this.pingStartTime > 0) {
+                const latencyRaw = Math.round(performance.now() - this.pingStartTime)
+                const previousEMALatency = this._networkLatency$.value
+                if (previousEMALatency === null) {
+                  this._networkLatency$.next(latencyRaw)
+                } else {
+                  const alpha = 0.3
+                  const EMALatency = Math.round(alpha * latencyRaw + (1 - alpha) * previousEMALatency);
+                  this._networkLatency$.next(EMALatency)
+                }
+                this.pingStartTime = 0;
+              }
+              break;
             case 'connected':
               this._connectionState$.next('connected');
               this.closeConnectionErrorCode = null;
@@ -206,7 +226,6 @@ export class QuotesDataService {
             case 'stream_started':
               this._streamActive$.next(true);
               this.quotesDataMap.clear();
-              //this.quotesDataArray = [];
               break;
             case 'stream_stopped':
               this._streamActive$.next(false);
@@ -273,8 +292,10 @@ export class QuotesDataService {
     this._streamActive$.next(false);
     this._connectionRepeat$.next(null);
     this._quotesData$.next([]);
+    this._networkLatency$.next(null)
     this.quotesDataMap.clear();
     this.retryAttemptNum = 0;
     this.closeConnectionErrorCode = null;
+    this.pingStartTime = 0;
   }
 }

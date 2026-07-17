@@ -72,18 +72,27 @@ input:-webkit-autofill:focus {
       &__info {
         width: 100%;
         display: flex;
+        align-items: center;
         @include mobile {
           display: grid;
+        }
+        &_ping {
+          margin-top: 1px;
+          margin-left: 8px;
+          display: flex;
+          gap:3px;
+          &.ping-good { color:glob.$base---primary; }
+          &.ping-warn { color: #f1c40f; }
+          &.ping-bad  { color: glob.$base---warning--accent; } 
         }
       }
 
       &__status.Disconnected {
-        color: #bc2d10;
-        padding: 5px 0 5px 0;
+        color: glob.$base---warning--accent;
       }
 
       &__status.Connected {
-        color: #0072ff;
+        color:glob.$base---accent;
       }
 
       &__user_button {

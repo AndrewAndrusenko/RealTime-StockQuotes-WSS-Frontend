@@ -2,6 +2,7 @@
 @let isStreamActive = (this.quotesService.streamActive$ | async) ?? false;
 @let connectionRepeat = this.quotesService.connectionRepeat$ | async;
 @let userData = this.authService.userData$ | async;
+@let networkLatency = this.quotesService.networkLatency$ | async;
 
 <button
   class="button-icon size-l outline-button"
@@ -40,9 +41,22 @@
                     : ''
               "
             >
-              {{isStreamActive ? " Active" : " No stream" }}
+              {{ isStreamActive ? " Active" : " No stream" }}
             </span>
           </div>
+          @if (networkLatency) {
+            <div
+              class="mng-panel__header__info_ping"
+              [ngClass]="{
+                'ping-good': networkLatency < 180,
+                'ping-warn': networkLatency >= 180 && networkLatency < 400,
+                'ping-bad': networkLatency >= 400,
+              }"
+            >
+              Ping:
+              <span style="margin-top: 1px"> {{ networkLatency }} ms </span>
+            </div>
+          }
         </div>
 
         <button
@@ -84,7 +98,7 @@
           (click)="manageStream()"
         >
           <mat-icon class="connection-panel__button-icon">
-            {{connectionState === "connected" ? "cast_connected" : "cast" }}
+            {{ connectionState === "connected" ? "cast_connected" : "cast" }}
           </mat-icon>
           <span class="connection-panel__button-text">
             {{
@@ -141,11 +155,11 @@
   }
   @if (["Reconnecting", "Connecting", "Disconnecting"].includes(connectionState)) {
     <div class="process-state">
-      <label>{{connectionState}}...</label>
+      <label>{{ connectionState }}...</label>
       @if (["Reconnecting"].includes(connectionState)) {
         <label>
           Attempt
-          {{connectionRepeat?.current }}
+          {{ connectionRepeat?.current }}
           out of
           {{ connectionRepeat?.total }}
         </label>

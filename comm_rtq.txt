@@ -114,6 +114,8 @@ RTQ - FrontEnd
 
 17/07/26
 1. Implemented UI heartbeat ping to keep client connection alive when there is no stream from the server
+17/07/26 - 2
+1. Network latency monitor has been implemented and added to UI. Latency is being smoothed by ema
 
 ToDo:
 6. Decompose the quote service by business context (connection, streaming, watchdog). 
