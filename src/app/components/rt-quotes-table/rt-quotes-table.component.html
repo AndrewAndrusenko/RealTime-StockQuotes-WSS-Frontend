@@ -1,8 +1,8 @@
-@let connectionState = (this.quotesService.connectionState$ | async) ?? "disconnected";
-@let isStreamActive = (this.quotesService.streamActive$ | async) ?? false;
-@let connectionRepeat = this.quotesService.connectionRepeat$ | async;
+@let connectionState = (this.wssCore.connectionState$ | async) ?? "disconnected";
+@let isStreamActive = (this.wssCore.streamActive$ | async) ?? false;
+@let connectionRepeat = this.wssCore.connectionRepeat$ | async;
 @let userData = this.authService.userData$ | async;
-@let networkLatency = this.quotesService.networkLatency$ | async;
+@let networkLatency = this.wssCore.networkLatency$ | async;
 
 <button
   class="button-icon size-l outline-button"

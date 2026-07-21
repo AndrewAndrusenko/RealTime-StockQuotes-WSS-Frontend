@@ -1,4 +1,4 @@
-import { TButtonName } from "../services/snacks.service"
+import { TButtonName } from "../shared/snacks.service"
 export interface IErrorHandler {
   code:number,
   messageToUI:string,

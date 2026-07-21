@@ -7,6 +7,7 @@ interface IConfigFile {
   "AUTH_SERVER_ENDPOINT":string,
   "AUTH_SERVER_UI_ADDRESS":string,
   "RETRY_INTERVAL":number,
+  "RETRY_ATTEMPTS":number,
   "STREAM_TIMEOUT":number,
   "PING_HEARTBEAT_INTERVAL":number,
   "SUCCESS_TIME_OUT":number
@@ -17,6 +18,7 @@ const DEFFULT_CONFIG:IConfigFile = {
   "AUTH_SERVER_ENDPOINT":"https://ppklrx85-3010.euw.devtunnels.ms/users/",
   "AUTH_SERVER_UI_ADDRESS":"https://ppklrx85-5001.euw.devtunnels.ms/apps/ssngrx/register",
   "RETRY_INTERVAL":1000,
+  "RETRY_ATTEMPTS":2,
   "STREAM_TIMEOUT":5500,
   "PING_HEARTBEAT_INTERVAL":15000,
   "SUCCESS_TIME_OUT":2000
@@ -43,5 +45,4 @@ export class ConfigService {
       })
     )
   }
-  
 }

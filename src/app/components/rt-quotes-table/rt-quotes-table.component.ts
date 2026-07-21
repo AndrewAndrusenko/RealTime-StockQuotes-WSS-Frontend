@@ -1,18 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { debounceTime, filter, Observable, of, Subscription, switchMap } from 'rxjs';
-import { QuotesDataService, IRate } from '../../services/quotes-data.service';
+import { QuotesDataService } from '../../services/quotes-data.service';
 import { FormControl } from '@angular/forms';
-import { AppStorage, StorageService, StorageType } from '../../services/storage.service';
-import { AuthService } from '../../services/auth.service';
-import { SnacksService } from '../../services/snacks.service';
-import { ConfigService } from '../../services/config.service';
+import { AppStorage, StorageService, StorageType } from '../../core/storage.service';
+import { AuthService } from '../../core/auth.service';
+import { SnacksService } from '../../shared/snacks.service';
+import { ConfigService } from '../../core/config.service';
+import { IRate } from '../../core/websocket.types';
+import { WebSocketService } from '../../core/websocket.service';
 @Component({
   selector: 'app-rt-quotes-table',
   templateUrl: './rt-quotes-table.component.html',
   styleUrls: ['./rt-quotes-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
+  providers:[WebSocketService,QuotesDataService]
 })
 export class RTQuotesTableComponent {
   private readonly CONFIG = inject(ConfigService).ENV_CONFIG
@@ -20,6 +23,7 @@ export class RTQuotesTableComponent {
   private appStorage: AppStorage = inject(StorageService).storage(StorageType.IndexDB);
   private subsriptions = new Subscription();
   public authService = inject(AuthService);
+  public wssCore = inject(WebSocketService);
   public quotesService = inject(QuotesDataService);
   public showPanels: boolean = true;
   public filterQuotesList = new FormControl('');
@@ -36,7 +40,7 @@ export class RTQuotesTableComponent {
       }),
     );
     this.subsriptions.add(
-      this.quotesService.connectionState$.pipe(filter((st) => st === 'connected')).subscribe((st) => {
+      this.wssCore.connectionState$.pipe(filter((st) => st === 'connected')).subscribe((st) => {
         this.getQuotesStream();
       }),
     );
@@ -52,9 +56,9 @@ export class RTQuotesTableComponent {
     //this.manageStream();
   }
   manageStream() {
-    this.quotesService.connectionState === 'connected'
+    this.wssCore.connectionState === 'connected'
       ? this.disconnectedFromStream()
-      : this.quotesService.connectToWSServer(this.bufferdTime);
+      : this.quotesService.connectToQuoteStream(this.bufferdTime);
   }
   resetBufferTime(bufferInput: HTMLInputElement) {
     const bufferTime = this.bufferdTime !== Number(bufferInput.value) ? Number(bufferInput.value) : this.bufferdTime
@@ -80,7 +84,7 @@ export class RTQuotesTableComponent {
   }
   disconnectedFromStream() {
     // stop receiving quotes data
-    this.quotesService.disconnectFromServer();
+    this.quotesService.disconnectFromQuoteStream();
   }
   trackByfn(index: number, item: IRate) {
     //trackBy to avoid whole list rendering on update

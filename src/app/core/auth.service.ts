@@ -3,20 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, EMPTY, map, Observable, of, switchMap, tap } from 'rxjs';
 import { StorageService, StorageType } from './storage.service';
 import { ConfigService } from './config.service';
-export interface IJWTInfo {
-  role: string;
-  userId: string;
-  _id: string;
-}
-export interface IJWTInfoExt extends IJWTInfo {
-  exp?: number | undefined;
-  iat?: number | undefined;
-  iss?: string | undefined;
-}
-export interface IJWTStorage {
-  code: 'jwt',
-  data: IJWTInfoExt 
-}
+import { IJWTInfo, IJWTInfoExt, IJWTStorage } from './jwt.types';
+
 @Injectable({
   providedIn: 'root',
 })

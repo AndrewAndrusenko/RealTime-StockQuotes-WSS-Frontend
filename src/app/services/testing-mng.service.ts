@@ -13,10 +13,10 @@ import {
   throwError,
 } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { SnacksService } from './snacks.service';
+import { SnacksService } from '../shared/snacks.service';
 import { SERVER_ERRORS } from '../types/errors-model';
-import { JwtHandlerService } from './jwt-handler.service';
-import { ConfigService } from './config.service';
+import { JwtHandlerService } from '../core/jwt.service';
+import { ConfigService } from '../core/config.service';
 export interface IServerCommand {
   cmd: string; //command to server: start, stop
   timeToWork: number; //time of emmiting values in milliseconds
@@ -30,10 +30,16 @@ export class TestingMngService {
   //Service to handle testing functionaly
   private readonly CONFIG = inject(ConfigService).ENV_CONFIG
   private readonly snacksService = inject(SnacksService)
-  private readonly jwtService =inject(JwtHandlerService)
-  private readonly _streamStarted$ = new BehaviorSubject<boolean>(false);
-  private readonly _serverConnection$ = new BehaviorSubject<boolean>(false);
+  private readonly jwtService = inject(JwtHandlerService)
+  //Stream status for UI
   private _webSocketTest$: WebSocketSubject<{ message: string } | IServerCommand> | undefined = undefined;
+
+  private readonly _streamStarted$ = new BehaviorSubject<boolean>(false);
+  public readonly streamStarted$ = this._streamStarted$.asObservable();
+  get streamStarted () {return this._streamStarted$.value}
+  //Server connection state
+  private readonly _serverConnection$ = new BehaviorSubject<boolean>(false);
+  public readonly serverConnection$ = this._serverConnection$.asObservable();
   private cmdCurrent: IServerCommand | undefined = undefined;
   private closeConnectionErrorCode: number = 0;
   private conecctionRetryCount: number = 2;
@@ -41,8 +47,8 @@ export class TestingMngService {
   private pingInterval = interval(60000).pipe(tap(() => this._webSocketTest$?.next({ message: 'ping' })));
   private pingIntervalSub = new Subscription();
 
-  ngOnDestroy(): void {
-    this._webSocketTest$?.closed ? null : this._webSocketTest$?.unsubscribe();
+  get webSocketTest$ () {
+    return this._webSocketTest$
   }
   sendMessageToServer(cmd: IServerCommand) {
     this.cmdCurrent = cmd;
@@ -136,16 +142,4 @@ export class TestingMngService {
       });
   }
 
-  get serverConnection$ () {
-    return this._serverConnection$.asObservable()
-  }
-  get streamStarted$ () {
-    return this._streamStarted$.asObservable()
-  }
-  get streamStarted () {
-    return this._streamStarted$.value
-  }
-  get webSocketTest$ () {
-    return this._webSocketTest$
-  }
 }

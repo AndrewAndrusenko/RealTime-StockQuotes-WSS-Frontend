@@ -21,8 +21,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MatMenuModule } from '@angular/material/menu';
-import { HttpErrorsHandlerInterceptor } from './interceptors/errors-http.interceptor';
-import { ConfigService } from './services/config.service';
+import { HttpErrorsHandlerInterceptor } from './core/errors.interceptor';
+import { ConfigService } from './core/config.service';
 
 export const IndexDBConfig: DBConfig = {
   name: 'RTQ',

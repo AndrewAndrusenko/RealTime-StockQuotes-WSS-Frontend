@@ -6,7 +6,7 @@ import {
   TextOnlySnackBar,
 } from '@angular/material/snack-bar';
 import { Observable } from 'rxjs';
-import { ConfigService } from './config.service';
+import { ConfigService } from '../core/config.service';
 export type TPanelClass = 'success-snackBar' | 'error-snackBar';
 export type TButtonName = 'Okay' | 'Ok' | 'Back' | 'Go to login' | 'Delete';
 @Injectable({

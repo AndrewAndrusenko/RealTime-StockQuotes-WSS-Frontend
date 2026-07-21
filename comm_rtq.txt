@@ -128,11 +128,25 @@ RTQ - FrontEnd
 2. Code base was refactored implementing new config service
 3. Error code map was transfered to a factory function
 4. SnackBars styles have been fixed
-3. 
+
+21/07/26
+1. Decomposition QuotesDataService into 2 layers:
+  - infrastructure layer WebSocketService responsible for transport, reconnecting, pings 
+  - business layer QuotesDataService responsible for buffering, watchdog, cache map and business logic
+2. WebSocketService-reconnecting: encapsulation all logic inside parent method
+3. WebSocketService streams business data vis serverStream$. business logic services build their streams from it
+4. Refactored and fixed disconnecting logic inside WebSocketService
+5. Scoped providers instead of root implemented for WebSocketService and QuotesDataService. WebSocketService must be able to created several independant connecions.
+6. Due to thw scoped architecture every service implements ngOnDestroy with triggering completing all subscriptions
+7. QuotesDataService - logic refactored according to new layered architecture
+8. QuotesDataService-createAutoReset method added to sync reseting services states with WebSocketService
+9. Vertical Slice Architecture started being implemented. 
+  - authentication, jwt, websockets, storage, error interceptor and config services have been moved to the core
+  - jwt and websocket types has been isolated
+
 ToDo:
 6. Decompose the quote service by business context (connection, streaming, watchdog). 
   -Infa layer - wss connect and disconnect
   -business layer - streaming/domain
   -infa untils: watchdog and ui heartbeat ping 
 3. Refactor TestingMngService in accordance with QuotesDataService: reconnecting handler and so on
-4. Config json to implement. паттерн  Runtime Configuration (конфигурация во время выполнения)

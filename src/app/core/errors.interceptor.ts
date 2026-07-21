@@ -2,11 +2,11 @@ import { inject, Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpErrorResponse } from '@angular/common/http';
 import { catchError, Observable, switchMap, take, tap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { SnacksService } from '../services/snacks.service';
+import { SnacksService } from '../shared/snacks.service';
 import { errorsCode, errorsInfo, IErrorCode } from '../types/errors-model';
 import { Location } from '@angular/common';
-import { JwtHandlerService } from '../services/jwt-handler.service';
-import { ConfigService } from '../services/config.service';
+import { JwtHandlerService } from './jwt.service';
+import { ConfigService } from './config.service';
 
 @Injectable()
 export class HttpErrorsHandlerInterceptor implements HttpInterceptor {
