@@ -17,7 +17,7 @@ import { TConnectionStatus } from '../types/shared-models';
 import { IErrorHandler, SERVER_ERRORS } from '../types/errors-model';
 import { JwtHandlerService } from './jwt.service';
 import { ConfigService } from './config.service';
-import { IRate, TwsServerResponse } from './websocket.types';
+import { IRate, IServerCommand, TwsServerResponse } from './websocket.types';
 
 @Injectable()
 export class WebSocketService {
@@ -37,6 +37,9 @@ export class WebSocketService {
   //WSS data stream
   private _serverStream$ = new Subject<IRate[]>()
   public serverStream$ = this._serverStream$.asObservable()
+  //WSS service messages stream
+  private _serverMessageStream$ = new Subject<{message: string}>()
+  public serverMessageStream$ = this._serverMessageStream$.asObservable()
   //Reconnecting data
   private readonly _connectionRepeat$ = new BehaviorSubject<{ current: number; total: number } | null>(null);
   public readonly connectionRepeat$ = this._connectionRepeat$.asObservable();
@@ -165,6 +168,7 @@ export class WebSocketService {
       .pipe(
         tap((data) => 'message' in Object(data) === false ? this._serverStream$.next(data as IRate[]) : null),
         filter((data) => 'message' in Object(data)),
+        tap((data) => this._serverMessageStream$.next(data as {message:string})),
         takeUntil(this.destroyStreams$),
       )
       .subscribe({
@@ -202,6 +206,9 @@ export class WebSocketService {
           }
         },
       });
+  }
+  public sendCommandToServer(cmd:IServerCommand) {
+    this.wsServer$?.next(cmd)
   }
   public setStreamActive(isActive:boolean) {
     this._streamActive$.next(isActive) 

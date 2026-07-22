@@ -9,4 +9,10 @@ export interface IRate {
   chgAsk: number;
   chgUpDown: number;
 }
-export type TwsServerResponse = IRate[] | { message: string } | { cmd: 'close' | 'ping' };
+export interface IServerCommand {
+  cmd: 'start'|'stop'|'ping'
+  timeToWork?: number; //time of emmiting values in milliseconds
+  intervalToEmit?: number; //interval between emits in milliseconds
+  market?: string;
+}
+export type TwsServerResponse = IRate[] | { message: string } | IServerCommand;

@@ -19,7 +19,7 @@ export class QuotesDataService {
   //Service to handle data
   private readonly snacksService = inject(SnacksService);
   private readonly CONFIG = inject(ConfigService).ENV_CONFIG;
-  private readonly websocketService = inject(WebSocketService)
+  private readonly wssCore = inject(WebSocketService)
   //Quotes data stream
   private readonly _quotesData$ = new BehaviorSubject<IRate[]>([]);
   public readonly quotesData$ = this._quotesData$.asObservable();
@@ -32,29 +32,30 @@ export class QuotesDataService {
   private quotesDataMap = new Map<string, IRate>();
 
   public connectToQuoteStream (bufferPeriod = 500, endpoint = this.CONFIG.TEST_WS_ENDPOINT +  '/front') {
-    if (this.isStreamInitialized && this.websocketService.connectionState !== 'disconnected') {
+    if (this.isStreamInitialized && this.wssCore.connectionState !== 'disconnected') {
       console.warn('[QuotesDataService] Stream already active. Connection request ignored.');
       return;
     }
     this.destroyQuoteStreams$.next();
     this.isStreamInitialized = true;
-    this.websocketService.connectServer(endpoint)
+    this.wssCore.connectServer(endpoint)
     this._quotesBufferTime$.next(bufferPeriod);
     this.createWatchDogStream();
     this.createQuoteStream();
     this.createAutoReset();
+    this.createNewStreamStarted();
   }
   public disconnectFromQuoteStream() {
     this.isStreamInitialized = false;
     this.destroyQuoteStreams$.next()
-    this.websocketService.disconnectServer();
+    this.wssCore.disconnectServer();
     this.resetQuoteServiceState()
   }
   public resetBufferTime(bufferPeriod: number) {
     this._quotesBufferTime$.next(bufferPeriod);
   }
   private createWatchDogStream(): void {
-    this.websocketService.serverStream$
+    this.wssCore.serverStream$
       .pipe(
         switchMap(() =>
           timer(this.CONFIG.STREAM_TIMEOUT).pipe(
@@ -66,7 +67,7 @@ export class QuotesDataService {
         takeUntil(this.destroyQuoteStreams$),
       )
       .subscribe((isActive) => {
-        this.websocketService.streamActive !== isActive ? this.websocketService.setStreamActive(isActive) : null;
+        this.wssCore.streamActive !== isActive ? this.wssCore.setStreamActive(isActive) : null;
         if (isActive === false) {
           const errMsg = `Warning: There has been no new quote for ${this.CONFIG.STREAM_TIMEOUT / 1000} sec...`;
           this.snacksService.openSnack(errMsg, 'Okay', 'error-snackBar');
@@ -79,7 +80,7 @@ export class QuotesDataService {
     this._quotesBufferTime$
       .pipe(
         switchMap((bufferPeriod) => {
-          return this.websocketService.serverStream$.pipe(
+          return this.wssCore.serverStream$.pipe(
             bufferTime(bufferPeriod),
             filter((buffer) => buffer.length > 0),
             map((bufferArrays) => {
@@ -94,9 +95,17 @@ export class QuotesDataService {
       .subscribe((quotesArray) => this._quotesData$.next(quotesArray));
   }
   private createAutoReset():void {
-    this.websocketService.connectionState$
+    this.wssCore.connectionState$
     .pipe(
       filter(state=>state === 'disconnected'),
+      tap(()=>this.resetQuoteServiceState()),
+      takeUntil(this.destroyQuoteStreams$)
+    ).subscribe()
+  }
+  private createNewStreamStarted():void {
+    this.wssCore.serverMessageStream$
+    .pipe(
+      filter(msg=>msg.message==='stream_started'),
       tap(()=>this.resetQuoteServiceState()),
       takeUntil(this.destroyQuoteStreams$)
     ).subscribe()

@@ -144,9 +144,16 @@ RTQ - FrontEnd
   - authentication, jwt, websockets, storage, error interceptor and config services have been moved to the core
   - jwt and websocket types has been isolated
 
+22/07/26
+1. Refactor: TestingMngService refactored adopting layered architecture and applying DRY by using core WebSocketService functionality
+2. Refactor: TestingPanelComponent refactored according to new layered architecture and wss core
+3. Fix: QuotesDataService: Added subscription createNewStreamStarted to reset quotes map when server starts new stream of quotes
+4. Feature: WebSocketService: Added public serverMessageStream$ to broadcast server service messages to its consumers.
+5. Feature: WebSocketService: Added public method sendCommandToServer$. The method allows consumers to send message to the ws server.
+Feature is being used by TestingMngService in order to initiate quotes stream
+
 ToDo:
 6. Decompose the quote service by business context (connection, streaming, watchdog). 
   -Infa layer - wss connect and disconnect
   -business layer - streaming/domain
   -infa untils: watchdog and ui heartbeat ping 
-3. Refactor TestingMngService in accordance with QuotesDataService: reconnecting handler and so on

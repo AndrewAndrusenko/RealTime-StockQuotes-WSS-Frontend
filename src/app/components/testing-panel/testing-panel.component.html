@@ -1,4 +1,5 @@
-@let quotesStreamIsStarted = this.testingService.streamStarted$;
+@let quotesStreamIsStarted = this.wssCore.streamActive$ | async;
+@let connectionState = (this.wssCore.connectionState$ | async) ?? 'disconnected';
 <main>
   <details
     open
@@ -9,9 +10,10 @@
         Test Server Panel - Server:
         <span
           class="mng-panel__header__status_state"
-          [ngClass]="(this.testingService.serverConnection$ | async) ? 'Connected' : 'Disconnected'"
+          [ngClass]="connectionState === 'connected'? 'Connected' : 'Disconnected'"
         >
-          {{ (this.testingService.serverConnection$ | async) ? " Connected" : " Disconnected" }}
+          {{ connectionState | titlecase}} 
+          {{['Reconnecting','Connecting','Disconnecting'].includes(connectionState)? '...' : ''}}
         </span>
       </div>
     </summary>
@@ -61,18 +63,18 @@
         class="button-icon size-l outline-button"
         [disabled]="manageStreamForm.invalid"
         [ngClass]="
-          (quotesStreamIsStarted | async) ? 'form__button-stream stop-stream' : 'form__button-stream start-stream'
+          quotesStreamIsStarted ? 'form__button-stream stop-stream' : 'form__button-stream start-stream'
         "
         (click)="manageStream()"
       >
         <mat-icon prefix>
-          {{ (quotesStreamIsStarted | async) ? "cancel" : "smart_display" }}
+          {{ quotesStreamIsStarted? "cancel" : "smart_display" }}
         </mat-icon>
         <span
           class="form__button-stream-text"
           #status
         >
-          {{ (quotesStreamIsStarted | async) ? "Stop" : "Start" }} ws test-server
+          {{ quotesStreamIsStarted? "Stop" : "Start" }} ws test-server
         </span>
       </button>
     </form>
