@@ -6,157 +6,159 @@
 
 <button
   class="button-icon size-l outline-button"
-  (click)="showPanels = !showPanels"
-  [style.opacity]="showPanels ? 1 : 0.5"
-  [matTooltip]="showPanels ? 'hide panels' : 'show panels'"
+  (click)="showPanels.set(!showPanels())"
+  [style.opacity]="showPanels() ? 1 : 0.5"
+  [matTooltip]="showPanels() ? 'hide panels' : 'show panels'"
 >
   Panels
-  <mat-icon>{{ showPanels ? "toggle_on" : "toggle_off" }}</mat-icon>
+  <mat-icon>{{ showPanels() ? "toggle_on" : "toggle_off" }}</mat-icon>
 </button>
 
 <main class="content">
-  @if (showPanels) {
+  @if (showPanels()) {
     <section class="testing-panel">
       <app-server-management-panel></app-server-management-panel>
     </section>
   }
-  @if (showPanels) {
-    <details
-      class="mng-panel"
-      open
-    >
-      <summary class="mng-panel__header">
-        <div class="mng-panel__header__info">
-          <span> Connection Panel -&nbsp;</span>
-          <div>
-            Stream:
-            <span
-              #status
-              class="mng-panel__header__status"
-              [ngClass]="
-                isStreamActive && connectionState === 'connected'
-                  ? 'Connected'
-                  : connectionState === 'connected'
-                    ? 'Disconnected'
-                    : ''
-              "
-            >
-              {{ isStreamActive ? " Active" : " No stream" }}
-            </span>
-          </div>
-          @if (networkLatency) {
-            <div
-              class="mng-panel__header__info_ping"
-              [ngClass]="{
-                'ping-good': networkLatency < 180,
-                'ping-warn': networkLatency >= 180 && networkLatency < 400,
-                'ping-bad': networkLatency >= 400,
-              }"
-            >
-              Ping:
-              <span style="margin-top: 1px"> {{ networkLatency }} ms </span>
-            </div>
-          }
-        </div>
-
-        <button
-          class="button-icon size-m outline-button mng-panel__header__user_button"
-          [matMenuTriggerFor]="menu"
-        >
-          {{ userData?.userId }}
-          <mat-icon prefix>more_vert</mat-icon>
-        </button>
-
-        <mat-menu #menu="matMenu">
-          <button
-            mat-menu-item
-            (click)="logOut(false)"
+  <details
+    class="mng-panel"
+    open
+  >
+    <summary class="mng-panel__header">
+      <div class="mng-panel__header__info">
+        <span> Connection Panel -&nbsp;</span>
+        <div>
+          Stream:
+          <span
+            #status
+            class="mng-panel__header__status"
+            [ngClass]="
+              isStreamActive && connectionState === 'connected'
+                ? 'Connected'
+                : connectionState === 'connected'
+                  ? 'Disconnected'
+                  : ''
+            "
           >
-            <mat-icon>logout</mat-icon>
-            <span>Log Out</span>
-          </button>
-          <button
-            mat-menu-item
-            (click)="logOut(true)"
-          >
-            <mat-icon>login</mat-icon>
-            <span>LogIn/SignUp</span>
-          </button>
-        </mat-menu>
-      </summary>
-      <section class="connection-panel">
-        <button
-          class="button-icon size-l connection-panel__button"
-          [disabled]="['Reconnecting', 'Connecting', 'Disconnecting'].includes(connectionState)"
-          [ngClass]="
-            connectionState === 'connected'
-              ? 'primary-button'
-              : connectionState === 'disconnected'
-                ? 'accent-button'
-                : null
-          "
-          (click)="manageStream()"
-        >
-          <mat-icon class="connection-panel__button-icon">
-            {{ connectionState === "connected" ? "cast_connected" : "cast" }}
-          </mat-icon>
-          <span class="connection-panel__button-text">
-            {{
-              connectionState === "connected"
-                ? "Stop "
-                : connectionState === "disconnected"
-                  ? "Connect"
-                  : connectionState
-            }}
+            {{ isStreamActive ? " Active" : " No stream" }}
           </span>
+        </div>
+        @if (networkLatency) {
+          <div
+            class="mng-panel__header__info_ping"
+            [ngClass]="{
+              'ping-good': networkLatency < 180,
+              'ping-warn': networkLatency >= 180 && networkLatency < 400,
+              'ping-bad': networkLatency >= 400,
+            }"
+          >
+            Ping:
+            <span style="margin-top: 1px"> {{ networkLatency }} ms </span>
+          </div>
+        }
+      </div>
+
+      <button
+        class="button-icon size-m outline-button mng-panel__header__user_button"
+        [matMenuTriggerFor]="menu"
+      >
+        {{ userData?.userId }}
+        <mat-icon prefix>more_vert</mat-icon>
+      </button>
+
+      <mat-menu #menu="matMenu">
+        <button
+          mat-menu-item
+          (click)="logOut(false)"
+        >
+          <mat-icon>logout</mat-icon>
+          <span>Log Out</span>
         </button>
-        <span class="connection-panel__buffer">
-          <label
-            for="buffer"
-            class="connection-panel__buffer-label"
-          >
-            Buffer Time:
-          </label>
-          <mat-slider
-            #slider
-            class="connection-panel__buffer-slider"
-            min="50"
-            max="5000"
-            step="100"
-            value="500"
-          >
-            <input
-              matSliderThumb
-              [(ngModel)]="bufferdTime"
-            />
-          </mat-slider>
-          <input
-            id="buffer"
-            #bufferInput
-            class="connection-panel__buffer-input"
-            [(ngModel)]="bufferdTime"
-            matTooltip="Time to buffer the stream in milliseconds"
-          />
-          <button
-            class="button-icon size-m outline-button"
-            (click)="resetBufferTime(bufferInput)"
-          >
-            <mat-icon
-              class="connection-panel__button-icon reset-connection"
-              matTooltip="Reset Stream"
-            >
-              refresh
-            </mat-icon>
-            <span class="connection-panel__button-text"> Reset </span>
-          </button>
+        <button
+          mat-menu-item
+          (click)="logOut(true)"
+        >
+          <mat-icon>login</mat-icon>
+          <span>LogIn/SignUp</span>
+        </button>
+      </mat-menu>
+    </summary>
+    <section class="connection-panel">
+      <button
+        class="button-icon size-l connection-panel__button"
+        [disabled]="['Reconnecting', 'Connecting', 'Disconnecting'].includes(connectionState)"
+        [ngClass]="
+          connectionState === 'connected'
+            ? 'primary-button'
+            : connectionState === 'disconnected'
+              ? 'accent-button'
+              : null
+        "
+        (click)="manageStream()"
+      >
+        <mat-icon class="connection-panel__button-icon">
+          {{ connectionState === "connected" ? "cast_connected" : "cast" }}
+        </mat-icon>
+        <span class="connection-panel__button-text">
+          {{
+            connectionState === "connected"
+              ? "Stop "
+              : connectionState === "disconnected"
+                ? "Connect"
+                : connectionState
+          }}
         </span>
-      </section>
-    </details>
-  }
+      </button>
+      <span class="connection-panel__buffer">
+        <label
+          for="buffer"
+          class="connection-panel__buffer-label"
+        >
+          Buffer Time:
+        </label>
+        <mat-slider
+          #slider
+          class="connection-panel__buffer-slider"
+          min="50"
+          max="5000"
+          step="100"
+          value="500"
+        >
+          <input
+            matSliderThumb
+            #sliderThumb="matSliderThumb"
+            [value]="bufferdTime()"
+            (input)="bufferInput.value = sliderThumb.value.toString()"
+          />
+        </mat-slider>
+        <input
+          id="buffer"
+          type="number"
+          #bufferInput
+          class="connection-panel__buffer-input"
+          [value]="bufferdTime()"
+          matTooltip="Time to buffer the stream in milliseconds"
+        />
+        <button
+          class="button-icon size-m outline-button"
+          (click)="resetBufferTime(bufferInput)"
+        >
+          <mat-icon
+            class="connection-panel__button-icon reset-connection"
+            matTooltip="Reset Stream"
+          >
+            refresh
+          </mat-icon>
+          <span class="connection-panel__button-text"> Reset </span>
+        </button>
+      </span>
+    </section>
+  </details>
+  
   @if (["Reconnecting", "Connecting", "Disconnecting"].includes(connectionState)) {
     <div class="process-state">
       <label>{{ connectionState }}...</label>
-      @if (["Reconnecting"].includes(connectionState)) {
+      @if (connectionState === "Reconnecting") {
         <label>
           Attempt
           {{ connectionRepeat?.current }}
@@ -173,32 +175,32 @@
       type="text"
       class="content__filter__input"
       placeholder="Symbol1, symbol2"
-      #filter
+      #filterInput
       aria-label="Number"
       matInput
-      [formControl]="filterQuotesList"
+      [formControl]="quotesFilterFC"
       [matAutocomplete]="auto"
     />
-    @if (filter.value) {
+    @if (filterInput.value) {
       <button
         class="content__filter__button"
         matSuffix
         mat-icon-button
         aria-label="Clear"
         matTooltip="Clear Filter"
-        (click)="filterQuotesList.patchValue(''); $event.stopPropagation()"
+        (click)="quotesFilterFC.patchValue(''); $event.stopPropagation()"
       >
         <mat-icon class="content__filter__button-icon"> clear </mat-icon>
       </button>
     }
-    @if ((newFilter | async) && filter.value) {
+    @if (isNewFilterUnique()) {
       <button
         class="content__filter__button"
         matSuffix
         mat-icon-button
         aria-label="Save"
         matTooltip="Save Filter"
-        (click)="filterQuotesList.value ? saveFilter(filterQuotesList!.value!) : null"
+        (click)="quotesFilterFC.value ? saveFilter(quotesFilterFC.value) : null"
       >
         <mat-icon class="content__filter__button-icon">save</mat-icon>
       </button>
@@ -208,14 +210,14 @@
       class="content__filter__button"
       matSuffix
       mat-icon-button
-      [style.opacity]="showPanels ? 1 : 0.5"
-      [matTooltip]="showPanels ? 'hide panels' : 'show panels'"
-      (click)="$event.stopPropagation(); showPanels = !showPanels"
+      [style.opacity]="showPanels() ? 1 : 0.5"
+      [matTooltip]="showPanels() ? 'hide panels' : 'show panels'"
+      (click)="$event.stopPropagation(); showPanels.set(!showPanels())"
     >
-      <mat-icon class="content__filter__button-icon">{{ showPanels ? "more_vert" : "more_vert" }}</mat-icon>
+      <mat-icon class="content__filter__button-icon">{{ showPanels() ? "more_vert" : "more_vert" }}</mat-icon>
     </button>
     <mat-autocomplete #auto="matAutocomplete">
-      @for (filterEl of savedFilters; track filterEl) {
+      @for (filterEl of savedFilters(); track filterEl) {
         <mat-option [value]="filterEl">
           <div class="content__filter__option-item">
             <span> {{ filterEl }}</span>
@@ -235,19 +237,18 @@
   </mat-form-field>
   <section
     class="quotes-table"
-    #table
   >
-    <li class="quotes-table quotes-table__header">
+    <div class="quotes-table quotes-table__header">
       <span class="quotes-table__header-col">Symbol</span>
       <span class="quotes-table__header-col">Bid</span>
       <span class="quotes-table__header-col">Ask</span>
       <span class="quotes-table__header-col text-end">Change</span>
       <span class="quotes-table__header-col text-end">UD</span>
       <span class="quotes-table__header-col">Time</span>
-    </li>
+    </div>
     <hr />
-    @for (item of quotesData$ | async; track trackByfn($index, item); let last = $last) {
-      <li>
+    @for (item of quotesData$ | async; track (item.symbol + item.time); let last = $last) {
+      <div>
         <div class="quotes-table quotes-table__items">
           <span class="quotes-table__items-col">{{ item.symbol }}</span>
           <span
@@ -285,7 +286,7 @@
         @if (!last) {
           <hr class="quotes-table__items-divider" />
         }
-      </li>
+      </div>
     }
   </section>
 </main>

@@ -30,7 +30,6 @@ import { MatIconModule } from '@angular/material/icon';
 export class ServerManagementPanelComponent {
   public wssCore = inject(WebSocketService);
   private testingService = inject(TestingMngService);
-  public panelOpenStateSD: boolean = true; //status of extension panel
   public manageStreamForm: FormGroup = inject(FormBuilder).group({
       cmd: ['start'],
       timeToWork: [30, { validators: [Validators.required, Validators.pattern('[0-9]*')] }],

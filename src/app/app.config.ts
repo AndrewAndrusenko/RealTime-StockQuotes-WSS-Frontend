@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptors } from "@angular/common/http";
-import { ApplicationConfig, inject, provideAppInitializer, provideZoneChangeDetection } from "@angular/core";
+import { ApplicationConfig, inject, provideAppInitializer, provideZonelessChangeDetection } from "@angular/core";
 import { errorsIterceptor } from "./core/errors.interceptor";
 import { ConfigService } from "./core/config.service";
 import { DBConfig, provideIndexedDb } from "ngx-indexed-db";
@@ -18,6 +18,7 @@ export const IndexDBConfig: DBConfig = {
 };
 export const appConfig:ApplicationConfig = {
   providers:[
+    provideZonelessChangeDetection(),
     provideAppInitializer(()=> {
       const configService = inject(ConfigService)
       return configService.loadConfigFile()
@@ -26,7 +27,6 @@ export const appConfig:ApplicationConfig = {
     provideHttpClient(
       withInterceptors([errorsIterceptor])
     ),
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(
       appRoutes,
       withComponentInputBinding()

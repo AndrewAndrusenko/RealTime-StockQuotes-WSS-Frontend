@@ -11,6 +11,8 @@ interface IConfigFile {
   "STREAM_TIMEOUT":number,
   "PING_HEARTBEAT_INTERVAL":number,
   "SUCCESS_TIME_OUT":number
+  "BUFFER_TIME_DEFAULT":number,
+  "MIN_BUFFER_TIME":number
 }
 const DEFFULT_CONFIG:IConfigFile = {
   "production": false,
@@ -21,7 +23,9 @@ const DEFFULT_CONFIG:IConfigFile = {
   "RETRY_ATTEMPTS":2,
   "STREAM_TIMEOUT":5500,
   "PING_HEARTBEAT_INTERVAL":15000,
-  "SUCCESS_TIME_OUT":2000
+  "SUCCESS_TIME_OUT":2000,
+  "BUFFER_TIME_DEFAULT":500,
+  "MIN_BUFFER_TIME":5
 }
 @Injectable({
   providedIn:'root'

@@ -160,6 +160,11 @@ Standalone migration
 1. App has been migrated to standalone architecture
 2. Error interceptor has been refactored to functional api
 
+24/07/26
+1. Zoneless approach has been implemented to improve performance on high frequency data streams, rendering and reduce CPU usage 
+2. RealTimeQuotesStreamComponent: migrated to signals
+
 ToDo:
-3 signals?
-4 zoneless, request frame when frequency is high
+4 request frame when frequency is high
+5 virtual scroll
+6 widget?
