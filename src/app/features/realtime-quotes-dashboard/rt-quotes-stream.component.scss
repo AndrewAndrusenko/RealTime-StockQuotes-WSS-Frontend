@@ -5,30 +5,18 @@
 
 @include formsmixins.ng-deep-form-field-contrast-styles;
 @include nds.nds-buttons;
+
 :host {
   display: flex;
 }
-input:-webkit-autofill,
-input:-webkit-autofill:focus {
-  transition:
-    background-color 0s 600000s,
-    color 0s 600000s !important;
-}
-:host::ng-deep .mat-slider-track-fill {
-  background-color: black !important;
-}
-:host::ng-deep .mat-slider-thumb {
-  background-color: black !important;
-}
-
 .desktop-buttons {
   @include mobile {
     display: none;
   }
 }
-.content {
 
-  width: var(--contentWidth);
+.content {
+  width: glob.$base--content-width;
   background-color: inherit;
   margin-left: 10vw;
 
@@ -36,17 +24,17 @@ input:-webkit-autofill:focus {
     margin: 0;
   }
   @include desktop {
-    --contentWidth: 60vw;
+    width: glob.$desktop--content-width;
     margin-left: 7vw;
   }
 
   @include tablet {
-    --contentWidth: 80vw;
+    width: glob.$tablet--content-width;
     margin-left: 5vw;
   }
 
   @include mobile {
-    --contentWidth: 96vw;
+    width: glob.$mobile--content-width;
     margin-left: 0;
   }
 
@@ -66,24 +54,28 @@ input:-webkit-autofill:focus {
 
       @include mobile {
         white-space: pre-line;
-        font-size: 14px !important;
+        gap: 8px;
+        font-size: glob.$mobile--font-size !important;
       }
 
       &__info {
         width: 100%;
         display: flex;
         align-items: center;
-        @include mobile {
-          display: grid;
-        }
         &_ping {
           margin-top: 1px;
           margin-left: 8px;
           display: flex;
-          gap:3px;
-          &.ping-good { color:glob.$base---primary; }
-          &.ping-warn { color: #f1c40f; }
-          &.ping-bad  { color: glob.$base---warning--accent; } 
+          gap: 3px;
+          &.ping-good {
+            color: glob.$base---primary;
+          }
+          &.ping-warn {
+            color: #f1c40f;
+          }
+          &.ping-bad {
+            color: glob.$base---warning--accent;
+          }
         }
       }
 
@@ -92,91 +84,166 @@ input:-webkit-autofill:focus {
       }
 
       &__status.Connected {
-        color:glob.$base---accent;
+        color: glob.$base---accent;
       }
 
       &__user_button {
         margin-right: 4px;
         cursor: pointer;
-      }
-    }
-  }
-  .connection-panel {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1vw;
-    margin-bottom: 0.5vh;
-    margin-top: 1vh;
-    padding-right: 1vw;
-
-    @include mobile {
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    &__button {
-      min-width: 200px;
-    }
-
-    &__buffer {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      column-gap: 1vw;
-
-      @include mobile {
-        column-gap: 1vw;
-      }
-
-      &-label {
         @include mobile {
-          font-size: 12px;
-          padding-left: 1vw;
-        }
-      }
-
-      &-slider {
-        width: 8vw !important;
-        min-width: 0 !important;
-        @include tablet {
-          width: 15vw !important;
-        }
-        @include mobile {
-          display: none;
-        }
-      }
-
-      &-input {
-        width: 5vw;
-        height: 80%;
-        filter: opacity(0.6);
-
-        @include mobile {
-          width: 12vw;
-          font-size: glob.$mobile--font-size;
+          min-width: 56px;
+          min-height: 24px;
+          font-size: glob.$mobile--font-size !important;
+          margin-left: 6px;
+          & mat-icon {
+            font-size: 16px;
+          }
         }
       }
     }
-  }
-
-  &__filter {
-    width: var(--contentWidth);
-
-    &__button {
-      margin-left: 1vw;
-      @include mobile {
-        margin-left: 4vw;
-      }
-    }
-
-    &__option-item {
+    &__ui {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 1vw;
+      margin-bottom: 0.5vh;
+      margin-top: 1vh;
+      padding-right: 1vw;
+
+      @include mobile {
+        padding-left: 0;
+        padding-right: 4px;
+      }
+
+      &__button {
+        min-width: 200px;
+        @include mobile {
+          min-width: 100px;
+          font-size: glob.$mobile--font-size !important;
+          min-height: 30px !important;
+          & mat-icon {
+            font-size: 16px;
+          }
+        }
+        &_reset {
+          @include mobile {
+            min-width: 40px;
+            font-size: glob.$mobile--font-size !important;
+            margin-left: 6px;
+            & mat-icon {
+              font-size: 16px;
+            }
+          }
+        }
+      }
+
+      &__buffer {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        column-gap: 1vw;
+
+        @include mobile {
+          column-gap: 1vw;
+        }
+
+        &-label {
+          @include mobile {
+            font-size: glob.$mobile--font-size;
+            padding-left: 1vw;
+          }
+        }
+
+        &-slider {
+          width: 8vw !important;
+          min-width: 0 !important;
+          @include tablet {
+            width: 15vw !important;
+          }
+          @include mobile {
+            display: none;
+          }
+        }
+
+        &-input {
+          width: 5vw;
+          height: 80%;
+          filter: opacity(0.6);
+
+          @include mobile {
+            width: 12vw;
+            font-size: glob.$mobile--font-size;
+          }
+        }
+      }
     }
   }
+  .progress-state {
+    @include mobile {
+      font-size: glob.$mobile--font-size;
+    }
+  }
+  .content__filter_wrap {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    .content__filter {
+      width: glob.$base--content-width;
+      @include desktop {
+        width: glob.$desktop--content-width;
+        margin-left: 7vw;
+      }
 
+      @include tablet {
+        width: glob.$tablet--content-width;
+        margin-left: 5vw;
+      }
+
+      @include mobile {
+        width: calc(glob.$mobile--content-width - 85px);
+        margin-left: 0;
+        font-size: glob.$mobile--font-size !important;
+        height: 64px;
+      }
+      &__label {
+        @include mobile {
+          font-size: glob.$mobile--font-size !important;
+        }
+      }
+      &__button {
+        @include mobile {
+          & mat-icon {
+            width: 20px;
+            font-size: 20px;
+          }
+        }
+      }
+
+      &__option-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        @include mobile {
+          font-size: glob.$mobile--font-size !important;
+        }
+      }
+    }
+    .panel-button {
+      flex-direction: column !important;
+      max-height: 56px !important;
+      & mat-icon {
+        font-size: 24px;
+        width: 24px !important;
+      }
+      @include mobile {
+        max-height: 40px !important;
+        & mat-icon {
+          width: 20px !important;
+          font-size: 20px;
+        }
+      }
+    }
+  }
   .quotes-table {
     list-style-type: none;
     justify-content: space-between;
@@ -184,7 +251,10 @@ input:-webkit-autofill:focus {
 
     &__header {
       display: flex;
-
+      margin-right: 8px;
+      @include mobile {
+        margin-right: 16px;
+      }
       &-col {
         min-width: 6vw;
         color: glob.$text---primary;
@@ -195,31 +265,41 @@ input:-webkit-autofill:focus {
           min-width: 10vw;
         }
         @include mobile {
-          font-size: 13px;
-          min-width: 15vw;
-        }
-        @include mobile {
-          font-size: 13px;
-          min-width: 20vw;
+          font-size: 12px;
+          //min-width: 15vw;
         }
       }
     }
-
+    .virtual-scroll-container {
+      height: 500px;
+      width: 100%;
+      contain: strict;
+      will-change: transform;
+    }
     &__items {
       display: flex;
-
+      align-items: center;
+      height: 35px;
+      border-radius: 6px;
+      color: glob.$base---primary;
+      &-even {
+        color: #fff;
+        background-color: #22313f;
+      }
       &-col {
         min-width: 6vw;
         &.text-end {
-          text-align: end;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
         }
         @include desktop {
           min-width: 10vw;
         }
 
         @include mobile {
-          font-size: 13px;
-          min-width: 20vw;
+          font-size: glob.$mobile--font-size;
+          min-width: 15vw;
         }
 
         &.quoteUp {
@@ -240,11 +320,13 @@ input:-webkit-autofill:focus {
         }
         &__icon {
           width: 26px;
-          height: 26px;
-
+          @include mobile {
+            width: 16px;
+          }
           &.quoteDown {
             transform: rotate(180deg);
             margin-right: 1px;
+            margin-bottom: 1px;
           }
 
           &__arrow.quoteDown {
@@ -254,7 +336,7 @@ input:-webkit-autofill:focus {
       }
 
       &-divider {
-        width: var(--contentWidth);
+        width: glob.$base--content-width;
         height: 0.1px;
         color: glob.$text---light;
       }

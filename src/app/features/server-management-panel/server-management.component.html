@@ -1,5 +1,5 @@
 @let quotesStreamIsStarted = this.wssCore.streamActive$ | async;
-@let connectionState = (this.wssCore.connectionState$ | async) ?? 'disconnected';
+@let connectionState = (this.wssCore.connectionState$ | async) ?? "disconnected";
 <main>
   <details
     open
@@ -10,16 +10,16 @@
         Test Server Panel - Server:
         <span
           class="mng-panel__header__status_state"
-          [ngClass]="connectionState === 'connected'? 'Connected' : 'Disconnected'"
+          [ngClass]="connectionState === 'connected' ? 'Connected' : 'Disconnected'"
         >
-          {{ connectionState | titlecase}} 
-          {{['Reconnecting','Connecting','Disconnecting'].includes(connectionState)? '...' : ''}}
+          {{ connectionState | titlecase }}
+          {{ ["Reconnecting", "Connecting", "Disconnecting"].includes(connectionState) ? "..." : "" }}
         </span>
       </div>
     </summary>
     <form [formGroup]="manageStreamForm">
       <div class="form__parameters">
-        <mat-form-field>
+        <mat-form-field class="form__parameters_field">
           <mat-label for="">TimeToWork</mat-label>
           <input
             matInput
@@ -35,7 +35,7 @@
             <mat-error> Only numbers </mat-error>
           }
         </mat-form-field>
-        <mat-form-field>
+        <mat-form-field class="form__parameters_field">
           <mat-label for="">Interval</mat-label>
           <input
             matInput
@@ -49,32 +49,39 @@
             <mat-error> Only numbers </mat-error>
           }
         </mat-form-field>
-        <mat-form-field>
+        <mat-form-field class="form__parameters_field">
           <mat-label for="">Market</mat-label>
 
-          <mat-select formControlName="market">
+          <mat-select
+            formControlName="market"
+            class="form__parameters_field_select"
+            panelClass="form_select_panel"
+          >
             <mat-option [value]="'m'"> MOEX</mat-option>
             <mat-option [value]="'n'"> Nasdaq</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
       <button
-        #manage
-        class="button-icon size-l outline-button"
-        [disabled]="manageStreamForm.invalid"
-        [ngClass]="
-          quotesStreamIsStarted ? 'form__button-stream stop-stream' : 'form__button-stream start-stream'
+        class="button-icon size-l accent-button form__parameters_button"
+        [disabled]="
+          manageStreamForm.invalid || ['Reconnecting', 'Connecting', 'Disconnecting'].includes(connectionState)
         "
+        [ngClass]="quotesStreamIsStarted ? 'form__button-stream stop-stream' : 'form__button-stream start-stream'"
         (click)="manageStream()"
       >
         <mat-icon prefix>
-          {{ quotesStreamIsStarted? "cancel" : "smart_display" }}
+          {{ quotesStreamIsStarted ? "cancel" : "smart_display" }}
         </mat-icon>
-        <span
-          class="form__button-stream-text"
-          #status
-        >
-          {{ quotesStreamIsStarted? "Stop" : "Start" }} ws test-server
+        <span class="form__button-stream-text">
+          {{
+            ["Reconnecting", "Connecting", "Disconnecting"].includes(connectionState)
+              ? connectionState
+              : quotesStreamIsStarted
+                ? "Stop"
+                : "Start"
+          }}
+          ws test-server
         </span>
       </button>
     </form>

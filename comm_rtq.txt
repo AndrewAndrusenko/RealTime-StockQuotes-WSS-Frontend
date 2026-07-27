@@ -164,7 +164,13 @@ Standalone migration
 1. Zoneless approach has been implemented to improve performance on high frequency data streams, rendering and reduce CPU usage 
 2. RealTimeQuotesStreamComponent: migrated to signals
 
+27/07/26
+1. Virtual Scroll was implemented to provide a user with access to the full set of quotes (varies from 500 to 900). 
+Rendering is limited to approx 20 rows regardless of quantity of rows received from ws server
+Thus UI stay responsive and smooth all the time
+2. Mobile layout has been refactored and fixed
+3. Styles and global layout has been refactored
+
 ToDo:
 4 request frame when frequency is high
-5 virtual scroll
 6 widget?

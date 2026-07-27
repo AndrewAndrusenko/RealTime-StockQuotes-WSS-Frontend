@@ -1,10 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
 @use '../src/styles/variables.scss' as glob;
+@use '../src/styles/mixins/media.mixin.scss' as *;
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-:root {
-  --contentWidth :44vw;
-}
 * {
   font-family: "Onest";
   font-weight: 400;
@@ -58,4 +56,17 @@ details[open] summary::before {
 }
 .mdc-snackbar__label {
   font-family: unset !important;
+}
+.form_select_panel {
+  background-color: glob.$base---secondary!important;
+  border-radius: 8px !important;
+  & mat-option {
+    color:glob.$base---primary !important;
+    @include mobile {
+      font-size: 12px !important;
+    }
+    &:hover, &.mat-mdc-option-active {
+      color:glob.$base---accent !important;
+    }
+  }
 }

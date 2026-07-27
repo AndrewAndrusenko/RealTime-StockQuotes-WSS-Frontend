@@ -10,18 +10,18 @@
   background-color: glob.$base---warning--accent !important;
 }
 main {
-  width: var(--contentWidth);
+  width: glob.$base--content-width;
 
   @include desktop {
-    --contentWidth: 60vw;
+    width: glob.$desktop--content-width;
   }
 
   @include tablet {
-    --contentWidth: 80vw;
+    width: glob.$tablet--content-width;
   }
 
   @include mobile {
-    --contentWidth: 96vw;
+    width: glob.$mobile--content-width;
   }
 
   .mng-panel {
@@ -40,7 +40,7 @@ main {
       color: glob.$text---primary;
 
       @include mobile {
-        font-size: 14px !important;
+        font-size: glob.$mobile--font-size !important;
       }
       &__status {
         width: 100%;
@@ -62,6 +62,31 @@ main {
       .form__parameters {
         display: flex;
         gap: 12px;
+        @include mobile {
+          gap: 8px;
+        }
+        &_field {
+          @include mobile {
+            width: 100px !important;
+            font-size: 12px !important;
+          }
+          &_select {
+            @include mobile {
+              width: 100px !important;
+              font-size: 12px !important;
+            }
+          }
+        }
+        &_button {
+          @include mobile {
+            min-width: 100px;
+            font-size: glob.$mobile--font-size !important;
+            min-height: 30px !important;
+            & mat-icon {
+              font-size: 16px;
+            }
+          }
+        }
       }
     }
   }

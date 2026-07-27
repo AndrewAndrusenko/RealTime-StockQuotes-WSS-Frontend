@@ -1,10 +1,7 @@
 @use '../variables.scss';
 @mixin ng-deep-form-field-contrast-styles {
     :host::ng-deep .mdc-text-field {
-        background-color:variables.$base---secondary
-
-    !important;
-
+        background-color:variables.$base---secondary !important;
         border-color:variables.$line---primary;
         border-radius: variables.$corner-radius--l;
         border-style: solid;

@@ -21,6 +21,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 @Component({
   selector: 'app-rt-quotes-stream',
   templateUrl: './rt-quotes-stream.component.html',
@@ -42,6 +43,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     DatePipe,
     MatIconModule,
     MatButtonModule,
+    ScrollingModule,
     ServerManagementPanelComponent,
   ],
   providers: [WebSocketService, QuotesDataService],
@@ -96,6 +98,9 @@ export class RealTimeQuotesStreamComponent {
       this.quotesService.resetBufferTime(newBufferTime);
     }
   }
+  trackQuotes(index:number,item:IRate):string {
+    return item.symbol + item.time
+  }
   getQuotesStream() {
     //Subscribe to the stream of quotes and handle update of quotes array
     this.quotesService.connectToQuoteStream(this.bufferdTime());
@@ -113,7 +118,7 @@ export class RealTimeQuotesStreamComponent {
             if (filterArray.length > 0) {
               return data.filter((quote) => filterArray.includes(quote.symbol.toLowerCase()));
             } else {
-              return data.slice(0, 50);
+              return data;
             }
           }),
         );
