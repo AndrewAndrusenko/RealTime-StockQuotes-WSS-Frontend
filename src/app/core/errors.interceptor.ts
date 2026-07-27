@@ -52,7 +52,7 @@ export const errorsIterceptor:HttpInterceptorFn = (
   function showError(code: number, msg: string | null = ''): Observable<never> {
     const errorOptions = errorsCode(CONFIG.AUTH_SERVER_UI_ADDRESS).get(code) as IErrorCode;
     return snacksService
-      .openSnackObserve(errorOptions?.message + '\n ' + msg, errorOptions?.buttonName, 'error-snackBar')
+      .openSnackObserve(errorOptions?.message , errorOptions?.buttonName, 'error-snackBar')
       .pipe(
         tap(() => {
           console.log('errorOptions', errorOptions);

@@ -71,7 +71,7 @@ export const errorsCode = (AUTH_SERVER_UI_ADDRESS:string) => (
       buttonName:'Back'
     }],
     [401,{
-      message:'Your session is not authenticated.\n You have to Log In again',
+      message:'Your session is not authenticated.\n You have to log in to your account',
       route:AUTH_SERVER_UI_ADDRESS,
       externalRoute:true,
       redirect:true,
