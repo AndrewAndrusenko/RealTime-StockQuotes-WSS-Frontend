@@ -26,9 +26,7 @@ Since the application runs in **Zoneless mode** (completely free from Zone.js ov
 
 ### Code Insight: Reactive Filters & Micro-Tracking
 
-typescript
-
-// Bridging FormControls into the Signal graph for pure reactive states
+```// Bridging FormControls into the Signal graph for pure reactive states
 private quotesFilterInputSignal = toSignal(
   this.quotesFilterFC.valueChanges.pipe(
     startWith(this.quotesFilterFC.value), 
@@ -54,8 +52,7 @@ public isNewFilterUnique = computed(() => {
 trackQuotes(index: number, item: IRate): string {
   return item.symbol + item.time;
 }
-
-Используйте код с осторожностью.
+```
 
 ### 2. Business Logic Orchestration & RxJS Buffering Strategy
 
@@ -66,9 +63,7 @@ Data stream management is separated from the network transport layer into a dedi
 * **Reactive Watchdog Pattern**: A silent health-check stream monitors data frequency. Every emission resets an internal RxJS timer. If the server stops producing data points for longer than the configured threshold (e.g., 5500ms), the watchdog instantly triggers a UI notification and shifts the stream status, even if the TCP connection remains technically alive.
 
 ### Code Insight: Buffer Toggling & Watchdog Execution
-
-typescript
-
+```
 // 1. Dynamic Buffer Switching & State Flattening
 private createQuoteStream(): void {
   this._quotesBufferTime$
@@ -110,8 +105,7 @@ private createWatchDogStream(): void {
       }
     });
 }
-
-Используйте код с осторожностью.
+```
 
 ### 3. Connection Resilience & WebSocket Lifecycle
 
@@ -122,9 +116,7 @@ The network layer is managed by a standalone WebSocketService built using rxjs/w
 * **⏱️ EMA Network Latency Tracking**: Keeps the connection alive using a strict Ping/Pong heartbeat interval. To prevent erratic metric jumps in the UI, network latency is smoothed out in real-time using an **Exponential Moving Average (EMA)** algorithm.
 
 ### Code Insight: The Resilient Reconnect Loop
-
-typescript
-
+```
 private reconnecting<T>(): MonoTypeOperatorFunction<T> {
   let retryAttemptNum = 0;
   
@@ -173,17 +165,14 @@ private reconnecting<T>(): MonoTypeOperatorFunction<T> {
       retry({ delay: retryDelay })   // Reconnect when stream throws an error
     );
 }
-
-Используйте код с осторожностью.
+```
 
 ### ⚙️ Runtime Configuration
 
 The application uses a **runtime configuration pattern** instead of build-time environment variables. This allows swapping environment targets, backend endpoints, and stream thresholds dynamically without rebuilding the Angular application artifact. 
 
 The configuration is loaded at startup from public/env.config.prod.json and points directly to our active development mesh services: 
-
-json
-
+```
 {
   "production": false,
   "TEST_WS_ENDPOINT": "wss://ppklrx85-3003.euw.devtunnels.ms",
@@ -197,7 +186,7 @@ json
   "BUFFER_TIME_DEFAULT": 500,
   "MIN_BUFFER_TIME": 50
 }
-
+```
 ### Key Parameter Breakdown
 
 * **⚡ Stream Tuning**: 
