@@ -16,6 +16,7 @@ The client ingests continuous data points via **WebSockets** at a rapid **50ms s
 ### 🏗️ Architecture & Optimizations
 
 ### 1. Zoneless, Signals & Viewport Optimization
+
 Since the application runs in **Zoneless mode** (completely free from Zone.js overhead), it avoids triggering heavy global change detection cycles on every 50ms WebSocket tick. Instead, UI updates are strictly reactive, driven by a combination of Angular Signals, RxJS streams, and DOM recycling. 
 
 * **Granular Change Detection Control**: The component utilizes ChangeDetectionStrategy.OnPush and natively hooks into the Zoneless engine via the async pipe and dynamic Signals (bufferdTime, savedFilters).
@@ -24,6 +25,9 @@ Since the application runs in **Zoneless mode** (completely free from Zone.js ov
 * **Micro-Optimized DOM Updates**: To prevent the virtual scroll container from completely rebuilding DOM nodes when an updated batch arrives, a precise compound tracking function is implemented. It tracks elements by combining the unique asset symbol and its latest timestamp, allowing Angular to mutate only the text nodes that actually changed.
 
 ### Code Insight: Reactive Filters & Micro-Tracking
+
+typescript
+
 // Bridging FormControls into the Signal graph for pure reactive states
 private quotesFilterInputSignal = toSignal(
   this.quotesFilterFC.valueChanges.pipe(
@@ -52,6 +56,7 @@ trackQuotes(index: number, item: IRate): string {
 }
 
 ### 2. Business Logic Orchestration & RxJS Buffering Strategy
+
 Data stream management is separated from the network transport layer into a dedicated QuotesDataService. It orchestrates high-frequency data ingestion, state flattening, and stream health monitoring using advanced RxJS reactive patterns. 
 
 * **Dynamic Reactively Switched Buffering**: The application allows users to dynamically adjust the UI refresh rate at runtime. By piping a BehaviorSubject of the buffer time into a switchMap, the downstream buffer window updates instantly without dropping or resetting the underlying WebSocket connection.
@@ -59,6 +64,9 @@ Data stream management is separated from the network transport layer into a dedi
 * **Reactive Watchdog Pattern**: A silent health-check stream monitors data frequency. Every emission resets an internal RxJS timer. If the server stops producing data points for longer than the configured threshold (e.g., 5500ms), the watchdog instantly triggers a UI notification and shifts the stream status, even if the TCP connection remains technically alive.
 
 ### Code Insight: Buffer Toggling & Watchdog Execution
+
+typescript
+
 // 1. Dynamic Buffer Switching & State Flattening
 private createQuoteStream(): void {
   this._quotesBufferTime$
@@ -102,6 +110,7 @@ private createWatchDogStream(): void {
 }
 
 ### 3. Connection Resilience & WebSocket Lifecycle
+
 The network layer is managed by a standalone WebSocketService built using rxjs/webSocket. Instead of basic reconnect loops, it implements production-grade resilience strategies to communicate with our standalone backend nodes: 
 
 * **⚡ Exponential Backoff with Jitter**: Reconnection delays grow exponentially (Math.pow(2, attempt)) combined with a random jitter factor (0.7 to 1.3) to prevent thundering herd problems on the server.
@@ -109,6 +118,9 @@ The network layer is managed by a standalone WebSocketService built using rxjs/w
 * **⏱️ EMA Network Latency Tracking**: Keeps the connection alive using a strict Ping/Pong heartbeat interval. To prevent erratic metric jumps in the UI, network latency is smoothed out in real-time using an **Exponential Moving Average (EMA)** algorithm.
 
 ### Code Insight: The Resilient Reconnect Loop
+
+typescript
+
 private reconnecting<T>(): MonoTypeOperatorFunction<T> {
   let retryAttemptNum = 0;
   
@@ -159,9 +171,13 @@ private reconnecting<T>(): MonoTypeOperatorFunction<T> {
 }
 
 ### ⚙️ Runtime Configuration
+
 The application uses a **runtime configuration pattern** instead of build-time environment variables. This allows swapping environment targets, backend endpoints, and stream thresholds dynamically without rebuilding the Angular application artifact. 
 
 The configuration is loaded at startup from public/env.config.prod.json and points directly to our active development mesh services: 
+
+json
+
 {
   "production": false,
   "TEST_WS_ENDPOINT": "wss://ppklrx85-3003.euw.devtunnels.ms",
@@ -177,6 +193,7 @@ The configuration is loaded at startup from public/env.config.prod.json and poin
 }
 
 ### Key Parameter Breakdown
+
 * **⚡ Stream Tuning**: 
 
   * BUFFER_TIME_DEFAULT & MIN_BUFFER_TIME: Controls the RxJS bufferTime window for bundling rapid high-frequency WebSocket updates before triggering UI Change Detection.
