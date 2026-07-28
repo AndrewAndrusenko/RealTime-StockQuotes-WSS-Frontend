@@ -55,6 +55,8 @@ trackQuotes(index: number, item: IRate): string {
   return item.symbol + item.time;
 }
 
+Используйте код с осторожностью.
+
 ### 2. Business Logic Orchestration & RxJS Buffering Strategy
 
 Data stream management is separated from the network transport layer into a dedicated QuotesDataService. It orchestrates high-frequency data ingestion, state flattening, and stream health monitoring using advanced RxJS reactive patterns. 
@@ -108,6 +110,8 @@ private createWatchDogStream(): void {
       }
     });
 }
+
+Используйте код с осторожностью.
 
 ### 3. Connection Resilience & WebSocket Lifecycle
 
@@ -169,6 +173,8 @@ private reconnecting<T>(): MonoTypeOperatorFunction<T> {
       retry({ delay: retryDelay })   // Reconnect when stream throws an error
     );
 }
+
+Используйте код с осторожностью.
 
 ### ⚙️ Runtime Configuration
 
