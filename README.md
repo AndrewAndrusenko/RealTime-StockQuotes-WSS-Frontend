@@ -177,7 +177,7 @@ The configuration is loaded at startup from public/env.config.prod.json and poin
   "production": false,
   "TEST_WS_ENDPOINT": "wss://ppklrx85-3003.euw.devtunnels.ms",
   "AUTH_SERVER_ENDPOINT": "https://ppklrx85-3010.euw.devtunnels.ms/users/",
-  "AUTH_SERVER_UI_ADDRESS": "https://ppklrx85-5001.euw.devtunnels.ms/apps/ssngrx/register",
+  "AUTH_SERVER_UI_ADDRESS": "https://ppklrx85-5001.euw.devtunnels.ms/apps/ssngrx/register/logout/:logout",
   "RETRY_INTERVAL": 1000,
   "RETRY_ATTEMPTS": 2,
   "STREAM_TIMEOUT": 5500,

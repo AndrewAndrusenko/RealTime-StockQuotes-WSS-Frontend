@@ -59,7 +59,12 @@
           class="button-icon size-m outline-button mng-panel__header__user_button"
           [matMenuTriggerFor]="menu"
         >
-          {{ userData?.userId }}
+          <span class="desktop">
+            {{ userData?.userId }}
+          </span>
+          <span class="mobile">
+            User
+          </span>
           <mat-icon prefix>more_vert</mat-icon>
         </button>
 

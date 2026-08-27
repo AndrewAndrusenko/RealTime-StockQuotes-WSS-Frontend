@@ -95,8 +95,21 @@
           min-height: 24px;
           font-size: glob.$mobile--font-size !important;
           margin-left: 6px;
+          margin-top: 3px;
+          margin-bottom: 3px;
           & mat-icon {
             font-size: 16px;
+          }
+        }
+        & > .desktop {
+          @include mobile {
+            display: none;
+          }
+        }
+        & > .mobile {
+          display: none;
+          @include mobile {
+            display: flex;
           }
         }
       }
