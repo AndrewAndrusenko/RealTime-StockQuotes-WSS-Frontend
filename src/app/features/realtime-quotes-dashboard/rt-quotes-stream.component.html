@@ -63,7 +63,7 @@
             {{ userData?.userId }}
           </span>
           <span class="mobile">
-            User
+            {{ userData?.userId? 'User' : ''}}
           </span>
           <mat-icon prefix>more_vert</mat-icon>
         </button>

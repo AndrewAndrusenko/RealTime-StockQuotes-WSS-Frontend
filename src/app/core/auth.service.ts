@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, EMPTY, map, Observable, of, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { StorageService, StorageType } from './storage.service';
 import { ConfigService } from './config.service';
 import { IJWTInfo, IJWTInfoExt, IJWTStorage } from './jwt.types';
@@ -22,20 +22,8 @@ export class AuthService {
     .get<IJWTInfoExt>(this.CONFIG.AUTH_SERVER_ENDPOINT + 'userData',{ withCredentials: true })
     .pipe(
       switchMap(userData=>this.appStorage.setStorageData<IJWTStorage>('jwt', { code: 'jwt', data: userData })),
-      map(data=>(data as IJWTStorage).data)
-    )
-  }
-
-  getUserData(): Observable<IJWTInfoExt | Error> {
-    return this.appStorage.getStorageData<IJWTStorage|undefined>('jwt')
-    .pipe(
-      map(data=>data as IJWTStorage),
-      switchMap(data=>data?.data? of(data.data) : this.httpGetUserData()),
-      tap(data=>this._userData$.next(data)),
-      catchError((err)=>{
-        console.error('getStorageData error',err )
-        return EMPTY
-      })
+      map(data=>(data as IJWTStorage).data),
+      tap(data=>this._userData$.next(data))
     )
   }
 

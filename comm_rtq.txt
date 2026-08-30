@@ -171,6 +171,10 @@ Thus UI stay responsive and smooth all the time
 2. Mobile layout has been refactored and fixed
 3. Styles and global layout has been refactored
 
+30/08/26
+fix(user data - state management):
+  * problem: when different accounts are logged in using the same browser, local storage provides out of date user data.
+  * fix: user data verified on each app initialization by requesting backend instead of relying on local storage. 
 ToDo:
 4 request frame when frequency is high
 6 widget?

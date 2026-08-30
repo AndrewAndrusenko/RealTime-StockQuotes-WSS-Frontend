@@ -80,7 +80,7 @@ export class RealTimeQuotesStreamComponent {
   });
 
   ngOnInit(): void {
-    this.authService.getUserData().pipe(take(1)).subscribe();
+    this.authService.httpGetUserData().pipe(take(1)).subscribe();
     this.appStorage
       .getStorageData('custom-filter')
       .pipe(take(1))
