@@ -1,4 +1,4 @@
-### Real-Time Stream Processing Dashboard
+### Real-Time Stream Processing Dashboard SB
 
 A high-performance, **Zoneless Angular 20** application designed for real-time financial data streaming, processing, and viewport rendering optimization. This system serves as the client layer within a broader **custom microservice ecosystem**, connecting seamlessly to independent, custom-built Auth and high-frequency WebSocket streaming servers. 
 
