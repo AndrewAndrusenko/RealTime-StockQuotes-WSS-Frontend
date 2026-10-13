@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, map, Observable, of, switchMap, tap } from 'rxjs';
 import { StorageService, StorageType } from './storage.service';
 import { ConfigService } from './config.service';
-import { IJWTInfo, IJWTInfoExt, IJWTStorage } from './jwt.types';
+import { IJWTInfo, IJWTInfoExt, IJWTStorage, JWTInfoExtSchema } from './jwt.types';
+import { VALIDATION_SCHEMA } from './validation.context';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,10 @@ export class AuthService {
 
   httpGetUserData():Observable<IJWTInfoExt> {
     return this.http
-    .get<IJWTInfoExt>(this.CONFIG.AUTH_SERVER_ENDPOINT + 'userData',{ withCredentials: true })
+    .get<IJWTInfoExt>(this.CONFIG.AUTH_SERVER_ENDPOINT + 'userData',{ 
+      context: new HttpContext().set(VALIDATION_SCHEMA,JWTInfoExtSchema),
+      withCredentials: true 
+    })
     .pipe(
       switchMap(userData=>this.appStorage.setStorageData<IJWTStorage>('jwt', { code: 'jwt', data: userData })),
       map(data=>(data as IJWTStorage).data),

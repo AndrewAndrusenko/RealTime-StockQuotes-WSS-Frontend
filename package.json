@@ -12,7 +12,6 @@
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch"
   },
-  
   "private": true,
   "dependencies": {
     "@angular/animations": "^20.3.19",
@@ -31,6 +30,7 @@
     "rxjs": "~7.5.0",
     "ts-node": "^10.9.2",
     "tslib": "^2.3.0",
+    "zod": "^4.6.7",
     "zone.js": "~0.15.1"
   },
   "devDependencies": {

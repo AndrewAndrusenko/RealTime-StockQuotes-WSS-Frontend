@@ -1,14 +1,22 @@
-export interface IJWTInfo {
-  role: string;
-  userId: string;
-  _id: string;
-}
-export interface IJWTInfoExt extends IJWTInfo {
-  exp?: number | undefined;
-  iat?: number | undefined;
-  iss?: string | undefined;
-}
-export interface IJWTStorage {
-  code: 'jwt',
-  data: IJWTInfoExt 
-}
+import z from "zod";
+
+export const JWTSchema = z.object({
+  role: z.string(),
+  userId: z.string(),
+  _id: z.string(),
+})
+export type IJWTInfo = z.infer<typeof JWTSchema>
+
+export const JWTInfoExtSchema = JWTSchema.extend({
+  exp: z.number().optional(),
+  iat: z.number().optional(),
+  iss: z.string().optional(),
+})
+export type IJWTInfoExt = z.infer<typeof JWTInfoExtSchema>
+
+export const JWTStorageSchema = z.object({
+  code: z.string(),
+  data: JWTInfoExtSchema 
+  
+})
+export type IJWTStorage = z.infer<typeof JWTStorageSchema>

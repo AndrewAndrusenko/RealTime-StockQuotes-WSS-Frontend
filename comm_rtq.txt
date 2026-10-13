@@ -175,6 +175,13 @@ Thus UI stay responsive and smooth all the time
 fix(user data - state management):
   * problem: when different accounts are logged in using the same browser, local storage provides out of date user data.
   * fix: user data verified on each app initialization by requesting backend instead of relying on local storage. 
+
+feat(auth): implement runtime API contract zod validation for jwt payload data
+  * add zod validation schemas for core jwt payload API responses
+  * create a scaleable HttpContext token for a dynamic schema providing
+  * update HTTP Interceptor by adding centralized automated zod schema parsing, verification and errors hadling via HttpContext
+  * replace core auth interfaces with types inferred from zod schema objects
+
 ToDo:
 4 request frame when frequency is high
 6 widget?

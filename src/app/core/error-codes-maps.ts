@@ -77,6 +77,13 @@ export const errorsCode = (AUTH_SERVER_UI_ADDRESS:string) => (
       redirect:true,
       buttonName:'Go to login'
     }],
+    [422,{
+      message:'JSON validation failed',
+      route:AUTH_SERVER_UI_ADDRESS,
+      externalRoute:false,
+      redirect:false,
+      buttonName:'Okay'
+    }],
     [0,{
       message:'Service is unavailable',
       route:'',
