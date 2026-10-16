@@ -8,9 +8,9 @@
     "build:prod-local": "ng build --base-href='/apps/rtq/' &&  npm run local-postbuild",
     "local-postbuild": "postbuild.cmd",
     "watch": "ng build --watch --configuration development",
-    "test": "jest --verbose",
+    "test": "jest --runInBand --logHeapUsage",
     "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch --maxWorkers=2"
   },
   "private": true,
   "dependencies": {
