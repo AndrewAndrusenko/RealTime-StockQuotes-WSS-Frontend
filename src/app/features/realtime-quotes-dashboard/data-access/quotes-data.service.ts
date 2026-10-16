@@ -81,16 +81,13 @@ export class QuotesDataService {
       .pipe(
         switchMap((bufferPeriod) => {
           return this.wssCore.serverStream$.pipe(
-            bufferTime(bufferPeriod),
-            filter((buffer) => buffer.length > 0),
-            map((bufferArrays) => {
-              const flatBuffer = bufferArrays.flat();
-              flatBuffer.forEach((rate) => this.quotesDataMap.set(rate.symbol, rate));
-              return Array.from(this.quotesDataMap.values());
-            }),
-          );
-        }),
-        takeUntil(this.destroyQuoteStreams$),
+              tap(rates => rates.forEach(rate => this.quotesDataMap.set(rate.symbol,rate))),
+              bufferTime(bufferPeriod),
+              filter((buffer) => buffer.length > 0),
+              map(() => Array.from(this.quotesDataMap.values())),
+            );
+          }),
+          takeUntil(this.destroyQuoteStreams$),
       )
       .subscribe((quotesArray) => this._quotesData$.next(quotesArray));
   }
@@ -111,8 +108,8 @@ export class QuotesDataService {
     ).subscribe()
   }
   private resetQuoteServiceState() {
-    this._quotesData$.next([]);
     this.quotesDataMap.clear();
+    this._quotesData$.next(Array.from(this.quotesDataMap.values()));
   }
   ngOnDestroy(): void {
     this.destroyQuoteStreams$.next()
