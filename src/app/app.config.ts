@@ -5,17 +5,8 @@ import { ConfigService } from "./core/config.service";
 import { DBConfig, provideIndexedDb } from "ngx-indexed-db";
 import { provideRouter, withComponentInputBinding } from "@angular/router";
 import { appRoutes } from "./app.routes";
-export const IndexDBConfig: DBConfig = {
-  name: 'RTQ',
-  version: 1,
-  objectStoresMeta: [
-    {
-      store: 'rtq',
-      storeConfig: { keyPath: 'code', autoIncrement: false },
-      storeSchema: [{ name: 'code', keypath: 'code', options: { unique: true } }],
-    },
-  ],
-};
+import { IndexDBConfig } from "./core/index-db.config";
+
 export const appConfig:ApplicationConfig = {
   providers:[
     provideZonelessChangeDetection(),
