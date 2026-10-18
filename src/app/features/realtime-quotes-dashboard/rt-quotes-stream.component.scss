@@ -19,7 +19,9 @@
   width: glob.$base--content-width;
   background-color: inherit;
   margin-left: 10vw;
-
+  display: flex;
+  flex-direction: column;
+  height: 98vh;
   &__divider {
     margin: 0;
   }
@@ -261,10 +263,15 @@
     list-style-type: none;
     justify-content: space-between;
     text-align: center;
-
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     &__header {
-      display: flex;
+      flex-direction: row;
+      flex: none;
       margin-right: 8px;
+      border-bottom: 1px solid;
+      margin-bottom: 4px;
       @include mobile {
         margin-right: 16px;
       }
@@ -279,22 +286,24 @@
         }
         @include mobile {
           font-size: 12px;
-          //min-width: 15vw;
         }
       }
     }
     .virtual-scroll-container {
-      height: 500px;
-      width: 100%;
+      flex:1;
+      overflow-y: auto;
+      min-height: 0;
+      display: block;
       contain: strict;
-      will-change: transform;
     }
     &__items {
       display: flex;
       align-items: center;
+      flex-direction: row;
       height: 35px;
       border-radius: 6px;
       color: glob.$base---primary;
+      will-change: transform;
       &-even {
         color: #fff;
         background-color: #22313f;
