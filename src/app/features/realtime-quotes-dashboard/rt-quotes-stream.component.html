@@ -247,15 +247,17 @@
       <span class="quotes-table__header-col">UpDw</span>
       <span class="quotes-table__header-col">Time</span>
     </div>
-    <hr />
     <cdk-virtual-scroll-viewport
       itemSize="35"
+      minBufferPx="200"
+      maxBufferPx="400"
       class="virtual-scroll-container"
     >
       <div
         *cdkVirtualFor="let item of quotesData$ | async; let even = even; trackBy: trackQuotes"
         class="quotes-table quotes-table__items"
         [class.quotes-table__items-even]="even"
+        data-testid="quote-data-row"
       >
           <span class="quotes-table__items-col">{{ item.symbol }}</span>
           <span
