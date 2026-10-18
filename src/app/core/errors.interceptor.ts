@@ -55,7 +55,7 @@ export const errorsIterceptor:HttpInterceptorFn = (
       case 422:
         return showError(422, `${error?.error} \n URL: ${error?.url}`);
       case 401:
-        return showError(401, error?.error);
+        return showError(401);
       case 403:
         return showError(403);
       case 0:
