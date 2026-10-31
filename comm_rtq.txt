@@ -182,6 +182,31 @@ feat(auth): implement runtime API contract zod validation for jwt payload data
   * update HTTP Interceptor by adding centralized automated zod schema parsing, verification and errors hadling via HttpContext
   * replace core auth interfaces with types inferred from zod schema objects
 
+16/10/26
+test(quotes): add unit tests for QuotesDataService with fakeAsync
+
+- Add lifecycle tests to prevent duplicate connection initializations
+- Add buffering tests verifying unique symbol aggregation and dynamic buffer periods
+- Add WatchDog stream tests for STREAM_TIMEOUT handling and network restoration
+- Add auto-reset cleanup tests on disconnection and stream restart events
+
+fix(quotes stream): retain buffer when buffer time has been changed
+- Add tap side effect to write quotes directly in quotesDataMap without flatBuffer. 
+- flatBuffer could be lost when user changed buffer time and switchMap created new stream
+- Now bufferTime only regulates frequency emitting quotes to UI 
+- Refactor resetQuoteServiceState. Emit to UI emptied underlying quotesDataMap insted of empty array
+
+18/10/26
+refactor(indexed-db): indexed-db config moved to a separate file 
+- config moved to a dedicated file to keep app config clean
+- testing: avoid injection conflicts   
+
+fix(perf):add buffer to virtual scroll to prevent empty rows
+
+style(quotes-table): make virtual scroll flexible 
+- updated the component styles allowing it to take up all available space
+
 ToDo:
+websocket-service refactor. split core wss and ui-ping. remove unnecessary share. add takeuntil and remove ignore elements operators 
 4 request frame when frequency is high
 6 widget?

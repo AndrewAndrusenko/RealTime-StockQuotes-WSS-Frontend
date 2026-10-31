@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TestingPanelComponent } from './server-management.component';
 
 /* describe('TestingPanelComponent', () => {
   let component: TestingPanelComponent;
