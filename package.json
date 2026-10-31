@@ -10,7 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "jest --runInBand --logHeapUsage",
     "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch --maxWorkers=2"
+    "test:watch": "jest --watch --maxWorkers=2 rt-quotes-stream.component.spec.ts"
   },
   "private": true,
   "dependencies": {
@@ -51,6 +51,7 @@
     "globals": "^15.11.0",
     "jest": "^29.7.0",
     "jest-preset-angular": "^14.4.0",
+    "jest-preview": "^0.3.3",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.12.2"
   }

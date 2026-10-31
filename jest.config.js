@@ -1,4 +1,8 @@
 module.exports = {
+  watchPathIgnorePatterns: [
+    '<rootDir>/.git/',
+    '<rootDir>/node_modules/'
+  ],
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   snapshotSerializers: [
