@@ -16,10 +16,11 @@
 
 <main class="content">
   @if (showPanels()) {
-    <app-server-management-panel></app-server-management-panel>
+    <app-server-management-panel data-testid="app-server-management-panel"></app-server-management-panel>
     <details
       class="mng-panel"
       open
+      data-testid="mng-panel"
     >
       <summary class="mng-panel__header">
         <div class="mng-panel__header__info">
@@ -29,6 +30,8 @@
             <span
               #status
               class="mng-panel__header__status"
+              data-testid="mng-panel__header__status"
+              [attr.data-state]="isStreamActive"
               [ngClass]="
                 isStreamActive && connectionState === 'connected'
                   ? 'Connected'
@@ -43,6 +46,7 @@
           @if (networkLatency) {
             <div
               class="mng-panel__header__info_ping"
+              data-testid="mng-panel__header__info_ping"
               [ngClass]="{
                 'ping-good': networkLatency < 180,
                 'ping-warn': networkLatency >= 180 && networkLatency < 400,
@@ -63,7 +67,7 @@
             {{ userData?.userId }}
           </span>
           <span class="mobile">
-            {{ userData?.userId? 'User' : ''}}
+            {{ userData?.userId ? "User" : "" }}
           </span>
           <mat-icon prefix>more_vert</mat-icon>
         </button>
@@ -88,6 +92,8 @@
       <section class="mng-panel__ui">
         <button
           class="button-icon size-l mng-panel__ui__button"
+          data-testid="mng-panel__ui__button"
+          [attr.data-state]="connectionState"
           [disabled]="['Reconnecting', 'Connecting', 'Disconnecting'].includes(connectionState)"
           [ngClass]="
             connectionState === 'connected'
@@ -121,6 +127,7 @@
           <mat-slider
             #slider
             class="mng-panel__ui__buffer-slider"
+            data-testid="mng-panel__ui__buffer-slider"
             min="50"
             max="5000"
             step="100"
@@ -129,6 +136,7 @@
             <input
               matSliderThumb
               #sliderThumb="matSliderThumb"
+              data-testid="buffer-time-value"
               [value]="bufferdTime()"
               (input)="bufferInput.value = sliderThumb.value.toString()"
             />
@@ -137,12 +145,15 @@
             id="buffer"
             type="number"
             #bufferInput
+            data-testid="buffer-time-value-manual"
             class="mng-panel__ui__buffer-input"
             [value]="bufferdTime()"
+            (input)="sliderThumb.value = +bufferInput.value"
             matTooltip="Time to buffer the stream in milliseconds"
           />
           <button
             class="button-icon size-m outline-button mng-panel__ui__button_reset"
+            data-testid="mng-panel__ui__button_reset"
             (click)="resetBufferTime(bufferInput)"
           >
             <mat-icon
@@ -173,11 +184,15 @@
     </div>
   }
   <div class="content__filter_wrap">
-    <mat-form-field class="content__filter">
+    <mat-form-field
+      class="content__filter"
+      data-testid="content__filter"
+    >
       <mat-label class="content__filter__label">Filter separated by comma </mat-label>
       <input
         type="text"
         class="content__filter__input"
+        data-testid="content__filter__input"
         placeholder="Symbol1, symbol2"
         #filterInput
         aria-label="Number"
@@ -200,6 +215,7 @@
       @if (isNewFilterUnique()) {
         <button
           class="content__filter__button"
+          data-testid="content__filter__button-save"
           matSuffix
           mat-icon-button
           aria-label="Save"
@@ -209,15 +225,16 @@
           <mat-icon class="content__filter__button-icon">save</mat-icon>
         </button>
       }
-        <mat-autocomplete #auto="matAutocomplete">
+      <mat-autocomplete #auto="matAutocomplete" data-testid="">
         @for (filterEl of savedFilters(); track filterEl) {
-          <mat-option [value]="filterEl">
+          <mat-option [value]="filterEl" data-testid="content__filter__mat-option-item">
             <div class="content__filter__option-item">
-              <span> {{ filterEl }}</span>
+              <span data-testid="content__filter__option-item"> {{ filterEl }}</span>
               <button
                 matSuffix
                 mat-icon-button
                 aria-label="Delete"
+                data-testid="delete-filter-button"
                 matTooltip="Delete Filter"
                 (click)="deleteFilter($event, filterEl)"
               >
@@ -252,6 +269,7 @@
       minBufferPx="200"
       maxBufferPx="400"
       class="virtual-scroll-container"
+      data-testid="virtual-scroll-container"
     >
       <div
         *cdkVirtualFor="let item of quotesData$ | async; let even = even; trackBy: trackQuotes"
@@ -259,38 +277,39 @@
         [class.quotes-table__items-even]="even"
         data-testid="quote-data-row"
       >
-          <span class="quotes-table__items-col">{{ item.symbol }}</span>
-          <span
-            class="quotes-table__items-col"
+        <span class="quotes-table__items-col">{{ item.symbol }}</span>
+        <span
+          class="quotes-table__items-col"
+          [ngClass]="item.chgUpDown === 1 ? 'quoteUp' : 'quoteDown'"
+          >{{ item.bid }}</span
+        >
+        <span
+          class="quotes-table__items-col"
+          data-testid="ask-price"
+          [ngClass]="item.chgUpDown === 1 ? 'quoteUp' : 'quoteDown'"
+          >{{ item.ask }}</span
+        >
+        <span
+          class="quotes-table__items-col text-end"
+          [ngClass]="item.chgBid >= 0 ? 'quoteUpPrc' : 'quoteDownPrc'"
+          >{{ item.chgBid | percent: "1.2-2" }}</span
+        >
+        <span class="quotes-table__items-col">
+          <svg
+            class="quotes-table__items-col__icon"
             [ngClass]="item.chgUpDown === 1 ? 'quoteUp' : 'quoteDown'"
-            >{{ item.bid }}</span
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
           >
-          <span
-            class="quotes-table__items-col"
-            [ngClass]="item.chgUpDown === 1 ? 'quoteUp' : 'quoteDown'"
-            >{{ item.ask }}</span
-          >
-          <span
-            class="quotes-table__items-col text-end"
-            [ngClass]="item.chgBid >= 0 ? 'quoteUpPrc' : 'quoteDownPrc'"
-            >{{ item.chgBid | percent: "1.2-2" }}</span
-          >
-          <span class="quotes-table__items-col">
-            <svg
-              class="quotes-table__items-col__icon"
+            <path
               [ngClass]="item.chgUpDown === 1 ? 'quoteUp' : 'quoteDown'"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-            >
-              <path
-                [ngClass]="item.chgUpDown === 1 ? 'quoteUp' : 'quoteDown'"
-                class="quotes-table__items-col__icon__arrow"
-                d="M 1.79 7.61 L 4.361 7.61 L 4.361 13.805 L 10.934 13.805 L 10.934 7.61 L 13.507 7.61 L 7.647 0"
-                fill="#57bf82"
-              ></path>
-            </svg>
-          </span>
-          <span class="quotes-table__items-col">{{ item.time | date: "HH:mm:ss" }}</span>
+              class="quotes-table__items-col__icon__arrow"
+              d="M 1.79 7.61 L 4.361 7.61 L 4.361 13.805 L 10.934 13.805 L 10.934 7.61 L 13.507 7.61 L 7.647 0"
+              fill="#57bf82"
+            ></path>
+          </svg>
+        </span>
+        <span class="quotes-table__items-col">{{ item.time | date: "HH:mm:ss" }}</span>
       </div>
     </cdk-virtual-scroll-viewport>
   </section>
