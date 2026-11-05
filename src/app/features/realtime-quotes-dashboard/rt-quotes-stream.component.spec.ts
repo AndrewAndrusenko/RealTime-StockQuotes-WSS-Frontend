@@ -138,6 +138,7 @@ describe('RealTimeQuotesStreamComponent', () => {
       {id:'[data-testid="mng-panel__ui__button"]', result:true},
       {id:'[data-testid="mng-panel__ui__buffer-slider"]', result:true},
       {id:'[data-testid="mng-panel__ui__button_reset"]', result:true},
+      {id:'[data-testid="mng-panel__header__user_button"]', result:true},
       {id:'[data-testid="content__filter"]', result:true},
       {id:'[data-testid="virtual-scroll-container"]', result:true},
       {id:'[data-testid="quote-data-row"]', result:false},
@@ -228,7 +229,33 @@ describe('RealTimeQuotesStreamComponent', () => {
     })
   });
   describe('Connection Status & Metrics', () => {
+    it('connect button state connected or disconnected', async () =>{
+      const connectButton =  fixture.debugElement.query(By.css('[data-testid="mng-panel__ui__button"]')).nativeElement as HTMLButtonElement;
+      //1.Connect to the stream
+      mockConnectionState$.next('connected');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      let buttonState = connectButton.getAttribute('data-state')
+      expect(connectButton.disabled).toBeFalsy()
+      expect(buttonState).toEqual('connected');
 
+      //2.Disconnect from the stream
+      mockConnectionState$.next('disconnected');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      buttonState = connectButton.getAttribute('data-state')
+      expect(connectButton.disabled).toBeFalsy()
+      expect(buttonState).toEqual('disconnected')
+    });
+    it('latency data', async() => {
+      let latencySpan =  fixture.debugElement.query(By.css('[data-testid="networkLatency"]'))?.nativeElement as HTMLButtonElement;
+      expect(!!latencySpan).toBeFalsy();
+      mockNetworkLatency$.next(180);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      latencySpan =  fixture.debugElement.query(By.css('[data-testid="networkLatency"]'))?.nativeElement as HTMLButtonElement;
+      expect(latencySpan.innerHTML).toContain('180');
+    })
   });
   describe('Stream filters management', () => {
     it('on click list of saved filters are shown', ()=> {
